@@ -2,6 +2,7 @@ import { Box, Tabs, Title, Tooltip } from '@mantine/core'
 import { useActiveActivity, useActivities } from '../../redux/hooks/activityHooks'
 import { getActivity } from '../../activities'
 import { SVGIcon } from '../../icons'
+import { useMemo } from 'react'
 
 
 export default function Activities() {
@@ -11,8 +12,9 @@ export default function Activities() {
     const [activeActivity, setActiveActivity] = useActiveActivity()
 
     // create tabs
-    const tabs = Object.entries(activities).map(([activityId, activityState]) => {
+    const tabs = useMemo(() => Object.entries(activities).map(([activityId, activityState]) => {
         const activityDef = getActivity(activityId)
+        console.log("tabs being created")
         return (
             <Tabs.Tab
                 key={activityId}
@@ -28,10 +30,10 @@ export default function Activities() {
                 </Tooltip>
             </Tabs.Tab>
         )
-    })
+    }), [activities])
 
     // create tab panels
-    const tabPanels = Object.entries(activities).map(([activityId, activityState]) => {
+    const tabPanels = useMemo(() => Object.entries(activities).map(([activityId, activityState]) => {
         const activityDef = getActivity(activityId)
         return (
             <Tabs.Panel value={activityId} key={activityId}>
@@ -39,7 +41,7 @@ export default function Activities() {
                 <activityDef.component {...activityState} />
             </Tabs.Panel>
         )
-    })
+    }), [activities])
 
     return (
         <Tabs
