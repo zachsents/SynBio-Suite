@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Container, Stepper, Group, Button, Tabs, Space, Title, Text, Center, SimpleGrid, Box, Divider, Badge } from "@mantine/core"
+import { Container, Stepper, Group, Button, Tabs, Space } from "@mantine/core"
 import Dropzone from '../../Dropzone'
 import CenteredTitle from '../../CenteredTitle'
 import { showNotification } from '@mantine/notifications'
@@ -8,17 +8,18 @@ import { IoAnalyticsSharp } from 'react-icons/io5'
 import { BiWorld } from "react-icons/bi"
 import ParameterForm from './ParameterForm'
 import ReviewTable from './ReviewTable'
-import { ObjectTypes } from '../../../objectTypes'
-import { titleFromFileName, useFile } from '../../../redux/hooks/workingDirectoryHooks'
+import { DocumentTypes } from '../../../modules/documentTypes'
 import { useContext } from 'react'
 import { pollStatus, submitAnalysis, terminateAnalysis } from '../../../ibiosim'
 import { useRef } from 'react'
 import { PanelContext } from './SimulatorPanel'
-import { usePanelProperty } from '../../../redux/hooks/panelsHooks'
 import { useTimeout } from '@mantine/hooks'
 import { RuntimeStatus } from '../../../runtimeStatus'
 import SimulationTimeline from './SimulationTimeline'
 import { CgCheckO } from "react-icons/cg"
+import { usePanelDocument } from '../../../state/hooks'
+import { removeUnderscores } from '../../../modules/documentParser'
+import { useDocumentStore } from '../../../state/documentStore'
 
 
 export const TabValues = {
@@ -33,37 +34,36 @@ export default function AnalysisWizard() {
     const panelId = useContext(PanelContext)
 
     // file info
-    const fileHandle = usePanelProperty(panelId, "fileHandle")
-    const panelTitle = titleFromFileName(fileHandle.name)
+    const panelTitle = removeUnderscores(usePanelDocument(panelId, "name"))
 
-    const [status, setStatus] = usePanelProperty(panelId, "runtimeStatus", false)
+    const [status, setStatus] = usePanelDocument(panelId, "data.runtimeStatus", true, false)
     const running = RuntimeStatus.running(status)
-    const [, setRequestedAt] = usePanelProperty(panelId, "lastRequestedAt", false)
+    const [, setRequestedAt] = usePanelDocument(panelId, "data.lastRequestedAt", true, false)
 
     // stepper states
     const numSteps = 3
-    const [activeStep, setActiveStep] = usePanelProperty(panelId, "activeStep", false, 0)
-    const nextStep = () => setActiveStep((current) => (current < numSteps ? current + 1 : current))
-    const prevStep = () => setActiveStep((current) => (current > 0 ? current - 1 : current))
+    const [activeStep, setActiveStep] = usePanelDocument(panelId, "data.activeStep", true, 0)
+    const nextStep = () => setActiveStep(activeStep < numSteps ? activeStep + 1 : activeStep)
+    const prevStep = () => setActiveStep(activeStep > 0 ? activeStep - 1 : activeStep)
 
     // Step 1: select component
-    const [componentId, setComponentId] = usePanelProperty(panelId, 'component', false)
-    const component = useFile(componentId)
-    const handleComponentChange = name => {
-        setComponentId(name)
+    const [componentId, setComponentId] = usePanelDocument(panelId, "data.componentDocument", true)
+    const component = useDocumentStore(s => s.entities[componentId])
+    const handleComponentChange = docId => {
+        setComponentId(docId)
     }
-    const isComponentOMEX = component?.objectType == ObjectTypes.OMEX.id
+    const isComponentOMEX = component?.type == DocumentTypes.OMEX
 
     // Step 2: select parameter source
-    const [parameterSource, setParameterSource] = usePanelProperty(panelId, 'parameterSource', false, TabValues.ENVIRONMENT)
-    const [environmentId, setEnvironmentId] = usePanelProperty(panelId, 'environment', false)
-    const environment = useFile(environmentId)
-    const handleEnvironmentChange = name => {
-        setEnvironmentId(name)
+    const [parameterSource, setParameterSource] = usePanelDocument(panelId, "data.parameterSource", true, TabValues.ENVIRONMENT)
+    const [environmentId, setEnvironmentId] = usePanelDocument(panelId, "data.environmentDocument", true)
+    const environment = useDocumentStore(s => s.entities[environmentId])
+    const handleEnvironmentChange = docId => {
+        setEnvironmentId(docId)
     }
 
     // form state
-    const formValues = usePanelProperty(panelId, "formValues")
+    const formValues = usePanelDocument(panelId, "data.formValues")
     const [formValidated, setFormValidated] = useState()
 
     // determine if we can move to next step or not
@@ -79,8 +79,8 @@ export default function AnalysisWizard() {
     }
 
     // submission & response tracking
-    const [results, setResults] = usePanelProperty(panelId, 'results', false)
-    const [orchestrationUris, setOrchestrationUris] = usePanelProperty(panelId, 'orchestrationUris', false)
+    const [results, setResults] = usePanelDocument(panelId, "data.results", true)
+    const [orchestrationUris, setOrchestrationUris] = usePanelDocument(panelId, "data.orchestrationUris", true)
 
     const orchestrationUrisRef = useRef(orchestrationUris)  // have to use refs for access from setTimeout callback
     orchestrationUrisRef.current = orchestrationUris
@@ -177,7 +177,7 @@ export default function AnalysisWizard() {
                     icon={<TbComponents />}
                 >
                     <Dropzone
-                        allowedTypes={[ObjectTypes.SBOL.id, ObjectTypes.SBML.id, ObjectTypes.OMEX.id]}
+                        allowedTypes={[DocumentTypes.SBOLModuleDefinition, DocumentTypes.SBML, DocumentTypes.OMEX]}
                         item={component?.name}
                         onItemChange={handleComponentChange}
                     >
@@ -206,7 +206,7 @@ export default function AnalysisWizard() {
                         </Tabs.List>
                         <Tabs.Panel value={TabValues.ENVIRONMENT}>
                             <Dropzone
-                                allowedTypes={[ObjectTypes.OMEX.id]}
+                                allowedTypes={[DocumentTypes.OMEX]}
                                 item={environment?.name}
                                 onItemChange={handleEnvironmentChange}
                             >

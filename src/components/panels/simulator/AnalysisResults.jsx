@@ -2,7 +2,6 @@ import { Button, Container, Group, ScrollArea, Space, useMantineTheme } from '@m
 import React from 'react'
 import { useRef } from 'react'
 import { useContext } from 'react'
-import { usePanelProperty } from '../../../redux/hooks/panelsHooks'
 import { useChartLegend } from './ChartLegend'
 import ChartOptions from './ChartOptions'
 import LineChart from './LineChart'
@@ -12,12 +11,13 @@ import AdditionalButtons from './AdditionalButtons'
 import { titleFromRunFileName } from "../../../modules/util"
 import { exportToPNG } from '../../../modules/export'
 import { titleFromFileName } from '../../../redux/hooks/workingDirectoryHooks'
+import { usePanelDocument } from '../../../state/hooks'
 
 
 export default function AnalysisResults() {
 
     const panelId = useContext(PanelContext)
-    const results = usePanelProperty(panelId, "results")
+    const results = usePanelDocument(panelId, "data.results")
     const mantineTheme = useMantineTheme()
 
     // create chart legend
@@ -27,12 +27,12 @@ export default function AnalysisResults() {
 
     // grab chart options from store
     const chartOptions = {
-        showTitles: usePanelProperty(panelId, "chartOption_showTitles"),
-        width: usePanelProperty(panelId, "chartOption_width"),
-        height: usePanelProperty(panelId, "chartOption_height"),
-        gapBetween: usePanelProperty(panelId, "chartOption_gapBetween"),
-        showLegendWithEvery: usePanelProperty(panelId, "chartOption_showLegendWithEvery"),
-        useWhiteBackground: usePanelProperty(panelId, "chartOption_useWhiteBackground"),
+        showTitles: usePanelDocument(panelId, "data.chartOption_showTitles"),
+        width: usePanelDocument(panelId, "data.chartOption_width"),
+        height: usePanelDocument(panelId, "data.chartOption_height"),
+        gapBetween: usePanelDocument(panelId, "data.chartOption_gapBetween"),
+        showLegendWithEvery: usePanelDocument(panelId, "data.chartOption_showLegendWithEvery"),
+        useWhiteBackground: usePanelDocument(panelId, "data.chartOption_useWhiteBackground"),
     }
 
     // create ref and handler for exporting images

@@ -3,10 +3,8 @@ import AnalysisWizard from './AnalysisWizard'
 import { createContext } from 'react'
 import AnalysisResults from './AnalysisResults'
 import PanelSaver from "../PanelSaver"
-import { useSelector } from 'react-redux'
-import { panelsSelectors } from '../../../redux/hooks/panelsHooks'
-import { createSelector } from '@reduxjs/toolkit'
 import StatusBadge from './StatusBadge'
+import { usePanelDocument } from '../../../state/hooks'
 
 
 export const PanelContext = createContext()
@@ -19,12 +17,7 @@ const TabValues = {
 
 export default function SimulatorPanel({ id }) {
 
-    const resultLength = useSelector(
-        createSelector(
-            state => panelsSelectors.selectById(state, id).results,
-            results => results && Object.keys(results).length
-        )
-    )
+    const resultLength = usePanelDocument(id, doc => Object.keys(doc.data.results || {}).length)
 
     return (
         <PanelContext.Provider value={id}>

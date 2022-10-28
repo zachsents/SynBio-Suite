@@ -12,6 +12,8 @@
   "dependencies": {
     "@emotion/cache": "^11.9.3",
     "@emotion/react": "^11.9.3",
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+    "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
     "@honkhonk/vite-plugin-svgr": "^1.1.0",
     "@mantine/core": "^5.0.0",
     "@mantine/form": "^5.0.0",
@@ -25,7 +27,9 @@
     "browser-downloads": "^0.2.0",
     "buffer": "^6.0.3",
     "exceljs": "^4.3.0",
+    "immer": "^9.0.15",
     "javascript-time-ago": "^2.5.7",
+    "nanoid": "^4.0.0",
     "react": "^18.2.0",
     "react-component-export-image": "^1.0.6",
     "react-dom": "^18.0.0",
@@ -33,7 +37,9 @@
     "react-redux": "^8.0.2",
     "react-smart-tabs": "^0.3.2",
     "react-time-ago": "^7.2.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "xml2js": "^0.4.23",
+    "zustand": "^4.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.18.2",

@@ -1,16 +1,16 @@
 import DragTabs from "./DragTabs"
-import { useActivePanel, usePanelIds, useReorderPanels } from '../../redux/hooks/panelsHooks'
 import Panel from "./Panel"
 import CenteredTitle from "../CenteredTitle"
 import { useLocalStorage } from "@mantine/hooks"
 import WelcomeScreen from "../WelcomeScreen"
+import { usePanelActions, usePanelStore } from "../../state/panelStore"
 
 export default function Panels() {
 
     // panel states
-    const panelIds = usePanelIds()
-    const [activePanel, setActivePanel] = useActivePanel()
-    const reorderPanels = useReorderPanels()
+    const panelIds = usePanelStore(s => s.ids)
+    const activePanel = usePanelStore(s => s.active)
+    const { setActive: setActivePanel, reorder: reorderPanels } = usePanelActions()
 
     // first time visitor
     const [firstTime] = useLocalStorage({ key: 'first-time-visiting', defaultValue: true })

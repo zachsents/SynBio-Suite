@@ -1,11 +1,11 @@
-import { Center, Checkbox, ColorPicker, Modal, Popover, SimpleGrid, Stack, Switch, Text, useMantineTheme } from '@mantine/core'
+import { Checkbox, ColorPicker, Modal, Popover, SimpleGrid, Stack, Switch, useMantineTheme } from '@mantine/core'
 import { useDebouncedValue, useListState } from '@mantine/hooks'
 import { LegendItem, LegendLabel, LegendOrdinal } from '@visx/legend'
 import { scaleOrdinal } from '@visx/scale'
 import { useState, useContext, useEffect } from 'react'
-import { usePanelProperty } from '../../../redux/hooks/panelsHooks'
 import { PanelContext } from './SimulatorPanel'
 import * as colorScheme from "../../../modules/colorScheme"
+import { usePanelDocument } from '../../../state/hooks'
 
 
 export function useChartLegend({ seriesLabels = [] }) {
@@ -17,7 +17,7 @@ export function useChartLegend({ seriesLabels = [] }) {
     const lineColors = Object.values(mantineTheme.colors).map(colorSeries => colorSeries[4])
 
     // series selection states
-    const [seriesInStore, setSeriesInStore] = usePanelProperty(panelId, "chartSeries", false)
+    const [seriesInStore, setSeriesInStore] = usePanelDocument(panelId, "data.chartSeries", true, false)
     const [series, seriesHandlers] = useListState([])
     const seriesShowing = (series || []).filter(s => s.show)
 
@@ -90,11 +90,11 @@ function Legend({ series, onPropChange }) {
     // grab chart options
     const chartOptions = {
         truncateSpeciesNames:
-            usePanelProperty(panelId, "chartOption_trucateSpeciesNames"),
+            usePanelDocument(panelId, "data.chartOption_trucateSpeciesNames"),
         gapBetween:
-            usePanelProperty(panelId, "chartOption_gapBetween"),
+            usePanelDocument(panelId, "data.chartOption_gapBetween"),
         useWhiteBackground:
-            usePanelProperty(panelId, "chartOption_useWhiteBackground"),
+            usePanelDocument(panelId, "data.chartOption_useWhiteBackground"),
     }
 
     // Create legend

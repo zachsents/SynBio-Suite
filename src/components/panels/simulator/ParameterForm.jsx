@@ -1,10 +1,9 @@
-import { Button, NumberInput, SegmentedControl, Tooltip, Group, Space, Center, Box } from '@mantine/core'
+import { NumberInput, SegmentedControl, Group, Space } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useContext, useEffect } from 'react'
-import { usePanelProperty } from '../../../redux/hooks/panelsHooks'
+import { usePanelDocument } from '../../../state/hooks'
 import InputWrapper from "./InputWrapper"
-import RandomNumberInput from './RandomNumberInput'
 import { PanelContext } from './SimulatorPanel'
 
 
@@ -68,7 +67,7 @@ export default function ParameterForm({ onValidation }) {
     const panelId = useContext(PanelContext)
 
     // set up state in global store and add default values
-    const [formValues, setFormValues] = usePanelProperty(panelId, 'formValues', false)
+    const [formValues, setFormValues] = usePanelDocument(panelId, "data.formValues", true)
 
     // set up form using Mantine hook
     const form = useForm({

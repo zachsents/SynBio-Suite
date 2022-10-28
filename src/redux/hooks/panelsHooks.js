@@ -5,7 +5,7 @@ import { showNotification } from "@mantine/notifications"
 import { createSelector } from "@reduxjs/toolkit"
 import { useEffect, useMemo, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { getPanelType, getPanelTypeForObject } from "../../panels"
+import { getPanelType, getPanelTypeForDocument } from "../../panels"
 
 const { actions, selectors } = panelsSlice
 
@@ -56,7 +56,7 @@ export function useOpenPanel() {
     const dispatch = useDispatch()
     return async fileHandle => {
 
-        const panelTypeDef = getPanelTypeForObject(fileHandle.objectType)
+        const panelTypeDef = getPanelTypeForDocument(fileHandle.objectType)
 
         // show error notification if there's no panel type
         if (!panelTypeDef) {

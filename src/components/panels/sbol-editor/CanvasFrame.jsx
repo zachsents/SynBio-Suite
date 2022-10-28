@@ -1,16 +1,40 @@
 
-import { Loader, LoadingOverlay, Progress } from '@mantine/core'
+import { LoadingOverlay, Progress } from '@mantine/core'
 import { useState, useEffect, useRef, useContext } from 'react'
 import { PanelContext } from './SBOLEditorPanel'
-import { usePanelProperty } from "../../../redux/hooks/panelsHooks"
+import { usePanelDocument } from '../../../state/hooks'
+import { useDocumentActions, useDocumentStore } from '../../../state/documentStore'
+import { parseFile } from '../../../modules/documentParser'
 
 
 export default function CanvasFrame() {
 
     const panelId = useContext(PanelContext)
 
+    // grab and concatenate dependencies to form full SBOL content
+    const documentId = usePanelDocument(panelId)
+    const fileName = usePanelDocument(panelId, "source")
+    const sbolContent = useDocumentStore(s => {
+        const document = s.entities[documentId]
+        const concattedXml = document.localDependencies
+            .map(depId => s.entities[depId].xml)
+            .join("\n")
+
+        return sbolHeader + document.xml + concattedXml + sbolFooter
+    })
+
+    // handle changes in SBOL
+    const { upsertMany, addDocumentsToFile } = useDocumentActions()
+    const setSBOLContent = async newContent => {
+        const newDocs = await parseFile(newContent, fileName)
+        upsertMany(newDocs) // add to documents list
+        addDocumentsToFile(newDocs.map(doc => doc.id), fileName)    // link to file
+
+        console.debug(`Received SBOL from child.\nParsed ${newDocs.length} documents.`)
+    }
+
     // state containing full SBOL content
-    const [sbolContent, setSBOLContent] = usePanelProperty(panelId, "sbol", false)
+    // const [sbolContent, setSBOLContent] = usePanelDocument(panelId, "data.sbol", true, false)
 
     // iframe reference
     const iframeRef = useRef()
@@ -31,10 +55,8 @@ export default function CanvasFrame() {
         }
 
         // handle object payloads
-        if (data?.sbol) {
-            console.debug('Received SBOL from child:', data.sbol.substring(0, 100))
+        if (data?.sbol)
             setSBOLContent(data.sbol)
-        }
     }
 
     // Add message listener on mount
@@ -99,3 +121,9 @@ const containerStyle = {
     overflowY: 'hidden',
     position: 'relative',
 }
+
+const sbolHeader = `<?xml version="1.0" ?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sbol="http://sbols.org/v2#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:prov="http://www.w3.org/ns/prov#" xmlns:om="http://www.ontology-of-units-of-measure.org/resource/om-2/" xmlns:SBOLCanvas="https://sbolcanvas.org/">
+`
+const sbolFooter = `
+</rdf:RDF>`

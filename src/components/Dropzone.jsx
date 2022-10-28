@@ -28,11 +28,11 @@ export default function Dropzone({ children, allowedTypes, item, onItemChange })
             .replace('type:', '')
         
         // check if this item is allowed in this dropzone
-        setAllowedToDrop(!allowedTypes || allowedTypes.includes(itemType))
+        setAllowedToDrop(!allowedTypes || allowedTypes.map(at => at.toLowerCase()).includes(itemType))
     }
 
     const handleDrop = event => {
-        allowedToDrop && onItemChange?.(event.dataTransfer.getData("fileId") || event.dataTransfer.getData("name"))
+        allowedToDrop && onItemChange?.(event.dataTransfer.getData("documentId") || event.dataTransfer.getData("name"))
         setAllowedToDrop(null)
     }
 

@@ -1,12 +1,12 @@
 import { Group, Text } from '@mantine/core'
 import React from 'react'
 
-export default function DragObject({ icon, type, title, fileId, ...props }) {
+export default function DragObject({ icon, type, title, documentId, ...props }) {
 
     const handleDragStart = event => {
         event.dataTransfer.setData("name", title)
         event.dataTransfer.setData("type", type)
-        event.dataTransfer.setData("fileId", fileId)
+        event.dataTransfer.setData("documentId", documentId)
 
         // can't access values of data on dragover for security reason
         // so we'll do a workaround
@@ -23,7 +23,7 @@ export default function DragObject({ icon, type, title, fileId, ...props }) {
             {...props}
         >
             {icon}
-            <Text size='sm' sx={textStyle}>{title}</Text>
+            {typeof title == "string" ? <Text size='sm' sx={textStyle}>{title}</Text> : title}
         </Group>
     )
 }

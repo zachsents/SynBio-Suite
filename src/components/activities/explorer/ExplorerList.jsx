@@ -1,83 +1,99 @@
-import { useCreateFile, useFiles } from '../../../redux/hooks/workingDirectoryHooks'
+import { Fragment, useState, memo, useCallback } from "react"
 import CreateNewButton from "./CreateNewButton"
-import { Accordion, ScrollArea, Title } from '@mantine/core'
-import { ObjectTypes } from '../../../objectTypes'
+import { DocumentTypes } from '../../../modules/documentTypes'
 import ExplorerListItem from './ExplorerListItem'
+import { useDocumentStore } from '../../../state/documentStore'
+import { documentListCompare } from '../../../state/entityTemplate'
+import { FaSearch } from "react-icons/fa"
+import { useDebouncedValue } from "@mantine/hooks"
+import ExplorerAccordion from "./ExplorerAccordion"
+import SBOLTree from "./SBOLTree"
 
 
 export default function ExplorerList() {
 
-    // grab file handles
-    const files = useFiles()
+    // grab list of partial documents
+    const documents = useDocumentStore(s => s.ids.map(
+        id => {
+            const { name, type, source } = s.entities[id]
+            return { id, name, type, source }
+        }
+    ), documentListCompare)
 
-    // handle creation
-    const createFile = useCreateFile()
-    const handleCreateObject = extension => fileName => {
-        createFile(fileName + extension)
-    }
-
-    // generate DragObjects based on data
-    const createListItems = (files, Icon) => files.map((file, i) =>
-        <ExplorerListItem
-            fileId={file.id}
-            icon={Icon && <Icon />}
-            key={i}
-        />
-    )
+    // search state and handler
+    const [rawSearchQuery, setSearchQuery] = useState("")
+    const [searchQuery] = useDebouncedValue(rawSearchQuery, 400)
 
     return (
-        <ScrollArea style={{ height: 'calc(100vh - 30px)' }}>
-            <Accordion
-                mt={10}
-                multiple
-                defaultValue={Object.values(ObjectTypes).map(({ id }) => id)}
-                styles={accordionStyles}
-                key={Math.random()}     // this forces re-render and fixes accordion heights
-            >
-                {
-                    // create AccordionItems by object type
-                    Object.values(ObjectTypes).map((objectType, i) => {
-                        // grab files of current type
-                        const filesOfType = files.filter(file => file.objectType == objectType.id)
-
-                        return (
-                            <Accordion.Item value={objectType.id} key={i}>
-                                <Accordion.Control>
-                                    <Title order={6} sx={titleStyle} >{objectType.listTitle}</Title>
-                                </Accordion.Control>
-                                <Accordion.Panel>
-                                    {objectType.createable &&
-                                        <CreateNewButton
-                                            onCreate={handleCreateObject(objectType.extension)}
-                                            suggestedName={`New ${objectType.title}`}
-                                        >
-                                            New {objectType.title}
-                                        </CreateNewButton>
-                                    }
-                                    {createListItems(filesOfType, objectType.icon)}
-                                </Accordion.Panel>
-                            </Accordion.Item>
-                        )
-                    })
-                }
-            </Accordion>
-        </ScrollArea>
+        <>
+            {/* <TextInput value={rawSearchQuery} onChange={event => setSearchQuery(event.currentTarget.value)} mt={10} size="xs" icon={<FaSearch />} /> */}
+            <ExplorerListItemContainer
+                searchQuery={searchQuery}
+                documents={documents}
+            />
+        </>
     )
 }
 
-const accordionStyles = theme => ({
-    control: {
-        padding: '4px 0',
-        borderRadius: 4
-    },
-    content: {
-        fontSize: 12,
-        padding: '5px 0 10px 5px'
-    }
+const ExplorerListItemContainer = memo(({ searchQuery, documents }) => {
+
+    const documentTypes = Object.values(DocumentTypes)
+
+    // handle creation
+    // WIP TO DO: implement creation
+    const handleCreateObject = useCallback(() => { }, [])
+
+    // count SBOL files
+    const numberOfSbolFiles = useDocumentStore(s => s.files.filter(file => file.sbol).length)
+
+    return (
+        <ExplorerAccordion
+            // topMargin
+            defaultValue={[]}
+            key={Math.random()}     // this forces re-render and fixes accordion heights
+            data={[
+                {
+                    id: "sbol",
+                    title: "SBOL Files",
+                    titleInfo: numberOfSbolFiles,
+                    content: <SBOLTree />
+                },
+                ...documentTypes.filter(dt => !dt.sbol).map(docType => {
+
+                    // pick out the List Items we need
+                    const docList = documents
+                        .filter(doc => doc.type == docType.id && alignsWithSearch(doc.name, searchQuery))
+                        .map(doc =>
+                            <ExplorerListItem
+                                documentId={doc.id} name={doc.name} type={doc.type} source={doc.source}
+                                icon={docType.icon && <docType.icon />} key={doc.id}
+                            />
+                        )
+
+                    return {
+                        id: docType.id,
+                        title: docType.listTitle,
+                        titleInfo: docList.length,
+                        content: <Fragment key={docType.id}>
+                            {docType.createable &&
+                                <CreateNewButton
+                                    onCreate={handleCreateObject(docType.extension)}
+                                    suggestedName={`New ${docType.title}`}
+                                >
+                                    New {docType.title}
+                                </CreateNewButton>
+                            }
+                            {docList}
+                        </Fragment>
+                    }
+                })
+            ]}
+        />
+    )
 })
 
-const titleStyle = theme => ({
-    fontWeight: 600,
-    fontSize: 12,
-    textTransform: 'uppercase',
-})
+
+function alignsWithSearch(item, query) {
+    const terms = query.toLowerCase().split(/\s+/).filter(term => !!term)
+    return !query || terms.some(term => item.toLowerCase().includes(term))
+}

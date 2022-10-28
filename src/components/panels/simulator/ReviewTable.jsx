@@ -1,27 +1,28 @@
 import { Badge, Container, Group, Table, Text } from '@mantine/core'
 import { useContext } from 'react'
-import { getObjectType } from '../../../objectTypes'
-import { usePanelProperty } from '../../../redux/hooks/panelsHooks'
-import { titleFromFileName, useFile } from '../../../redux/hooks/workingDirectoryHooks'
+import { getDocumentType } from '../../../modules/documentTypes'
 import { parameterMap } from './ParameterForm'
 import { PanelContext } from './SimulatorPanel'
 import { TabValues as ParameterSources } from './AnalysisWizard'
+import { usePanelDocument } from '../../../state/hooks'
+import { useDocumentStore } from '../../../state/documentStore'
+import { removeUnderscores } from '../../../modules/documentParser'
 
 
 export default function ReviewTable() {
 
     const panelId = useContext(PanelContext)
 
-    const formValues = usePanelProperty(panelId, 'formValues')
-    const parameterSource = usePanelProperty(panelId, 'parameterSource')
+    const formValues = usePanelDocument(panelId, "data.formValues")
+    const parameterSource = usePanelDocument(panelId, "data.parameterSource")
 
-    const inputFileId = usePanelProperty(panelId, 'component')
-    const inputFile = useFile(inputFileId)
-    const inputFileObjectType = getObjectType(inputFile?.objectType)
+    const inputDocumentId = usePanelDocument(panelId, "data.componentDocument")
+    const inputDocument = useDocumentStore(s => s.entities[inputDocumentId])
+    const inputDocumentType = getDocumentType(inputDocument?.type)
 
-    const environmentFileId = usePanelProperty(panelId, 'environment')
-    const environmentFile = useFile(environmentFileId)
-    const environmentFileObjectType = getObjectType(environmentFile?.objectType)
+    const environmentDocumentId = usePanelDocument(panelId, "data.environmentDocument")
+    const environmentDocument = useDocumentStore(s => s.entities[environmentDocumentId])
+    const environmentDocumentType = getDocumentType(environmentDocument?.type)
 
     const tableContents = () => {
         switch (parameterSource) {
@@ -30,9 +31,9 @@ export default function ReviewTable() {
                     <td><Text weight={600}>Environment</Text></td>
                     <td>
                         <Group position='right'>
-                            <Text weight={600}>{titleFromFileName(environmentFile?.name)}</Text>
-                            {environmentFileObjectType?.badgeLabel &&
-                                <Badge>{environmentFileObjectType.badgeLabel}</Badge>}
+                            <Text weight={600}>{removeUnderscores(environmentDocument?.name)}</Text>
+                            {environmentDocumentType?.badgeLabel &&
+                                <Badge>{environmentDocumentType.badgeLabel}</Badge>}
                         </Group>
                     </td>
                 </tr>
@@ -61,9 +62,9 @@ export default function ReviewTable() {
                         <td><Text weight={600}>Input</Text></td>
                         <td>
                             <Group position='right'>
-                                <Text weight={600}>{titleFromFileName(inputFile?.name)}</Text>
-                                {inputFileObjectType?.badgeLabel &&
-                                    <Badge>{inputFileObjectType.badgeLabel}</Badge>}
+                                <Text weight={600}>{removeUnderscores(inputDocument?.name)}</Text>
+                                {inputDocumentType?.badgeLabel &&
+                                    <Badge>{inputDocumentType.badgeLabel}</Badge>}
                             </Group>
                         </td>
                     </tr>

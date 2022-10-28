@@ -1,6 +1,6 @@
 import { workingDirectorySlice } from '../store'
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
-import { classifyFile } from "../../objectTypes"
+import { classifyFile } from "../../modules/documentTypes"
 import { useOpenPanel, useCloseAllPanels, usePanelIds, useClosePanel, panelsSelectors } from "./panelsHooks"
 
 const { actions, selectors } = workingDirectorySlice

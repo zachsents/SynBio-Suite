@@ -1,13 +1,13 @@
 import { Badge } from '@mantine/core'
-import React, { useContext } from 'react'
-import { usePanelProperty } from '../../../redux/hooks/panelsHooks'
+import { useContext } from 'react'
 import { RuntimeStatus } from '../../../runtimeStatus'
+import { usePanelDocument } from '../../../state/hooks'
 import { PanelContext } from './SimulatorPanel'
 
 export default function StatusBadge() {
 
     const panelId = useContext(PanelContext)
-    const status = usePanelProperty(panelId, 'runtimeStatus')
+    const status = usePanelDocument(panelId, "data.runtimeStatus")
 
     return RuntimeStatus.running(status) ?
         <div style={{ position: 'relative' }}>

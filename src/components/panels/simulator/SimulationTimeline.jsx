@@ -1,6 +1,5 @@
 import { Container, Text, Timeline, Title } from '@mantine/core'
 import React, { useContext } from 'react'
-import { usePanelProperty } from '../../../redux/hooks/panelsHooks'
 import { PanelContext } from './SimulatorPanel'
 import ReactTimeAgo from 'react-time-ago'
 import { RuntimeStatus } from '../../../runtimeStatus'
@@ -11,13 +10,14 @@ import { IoMdClose } from "react-icons/io"
 import { TiInputChecked } from "react-icons/ti"
 import { AiOutlineDoubleRight } from "react-icons/ai"
 import { BiRun } from "react-icons/bi"
+import { usePanelDocument } from '../../../state/hooks'
 
 
 export default function SimulationTimeline() {
 
     const panelId = useContext(PanelContext)
-    const status = usePanelProperty(panelId, "runtimeStatus")
-    const requestedAt = usePanelProperty(panelId, "lastRequestedAt")
+    const status = usePanelDocument(panelId, "data.runtimeStatus")
+    const requestedAt = usePanelDocument(panelId, "data.lastRequestedAt")
 
     const running = RuntimeStatus.running(status)
     const successful = RuntimeStatus.successful(status)

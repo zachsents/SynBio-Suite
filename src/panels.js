@@ -1,7 +1,7 @@
 import SBOLEditorPanel from "./components/panels/sbol-editor/SBOLEditorPanel";
 import SimulatorPanel from "./components/panels/simulator/SimulatorPanel";
 import { CanvasIcon, SimulationIcon } from "./icons";
-import { ObjectTypes } from "./objectTypes";
+import { DocumentTypes } from "./modules/documentTypes";
 
 
 export const PanelTypes = {
@@ -9,7 +9,7 @@ export const PanelTypes = {
         id: "synbio.panel-type.simulator",
         title: "iBioSim Analysis",
         component: SimulatorPanel,
-        objectTypes: [ ObjectTypes.Analysis.id ],
+        objectTypes: [ DocumentTypes.Analysis ],
         icon: SimulationIcon,
 
         deserialize: content => {
@@ -30,7 +30,7 @@ export const PanelTypes = {
         id: "synbio.panel-type.sbol-editor",
         title: "SBOL Canvas",
         component: SBOLEditorPanel,
-        objectTypes: [ ObjectTypes.SBOL.id ],
+        objectTypes: [ DocumentTypes.SBOLComponentDefinition, DocumentTypes.SBOLModuleDefinition ],
         icon: CanvasIcon,
 
         deserialize: content => ({
@@ -45,6 +45,6 @@ export function getPanelType(id) {
     return Object.values(PanelTypes).find(pt => pt.id == id)
 }
 
-export function getPanelTypeForObject(objectType) {
-    return Object.values(PanelTypes).find(pt => pt.objectTypes.includes(objectType))
+export function getPanelTypeForDocument(docType) {
+    return Object.values(PanelTypes).find(pt => pt.objectTypes.includes(docType))
 }

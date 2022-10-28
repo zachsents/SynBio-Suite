@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 import { useContext } from 'react'
 import { PanelContext } from './SimulatorPanel'
 import { truncateSpeciesNames } from './ChartLegend'
-import { usePanelProperty } from '../../../redux/hooks/panelsHooks'
+import { usePanelDocument } from '../../../state/hooks'
 
 const accessors = {
     xAccessor: d => d?.[0],
@@ -25,11 +25,11 @@ export default function LineChart({ data, title, series, height, mt, yDomain }) 
     // grab chart options
     const chartOptions = {
         truncateSpeciesNames:
-            usePanelProperty(panelId, "chartOption_trucateSpeciesNames"),
+            usePanelDocument(panelId, "data.chartOption_trucateSpeciesNames"),
         showGrid:
-            usePanelProperty(panelId, "chartOption_showGrid"),
+            usePanelDocument(panelId, "data.chartOption_showGrid"),
         useWhiteBackground:
-            usePanelProperty(panelId, "chartOption_useWhiteBackground"),
+            usePanelDocument(panelId, "data.chartOption_useWhiteBackground"),
     }
 
     // adjust themes

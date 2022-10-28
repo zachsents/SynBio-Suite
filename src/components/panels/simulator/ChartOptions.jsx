@@ -1,7 +1,7 @@
 import { Button, Popover, Slider, Switch, Text } from '@mantine/core'
 import { useContext } from 'react'
 import { GoSettings } from 'react-icons/go'
-import { usePanelProperty } from '../../../redux/hooks/panelsHooks'
+import { usePanelDocument } from '../../../state/hooks'
 import { PanelContext } from './SimulatorPanel'
 
 export default function ChartOptions() {
@@ -9,28 +9,28 @@ export default function ChartOptions() {
     const panelId = useContext(PanelContext)
 
     const [useWhiteBackground, setUseWhiteBackground] =
-        usePanelProperty(panelId, "chartOption_useWhiteBackground", false, false)
+        usePanelDocument(panelId, "data.chartOption_useWhiteBackground", true, false)
 
     const [truncateSpeciesNames, setTruncateSpeciesNames] =
-        usePanelProperty(panelId, "chartOption_trucateSpeciesNames", false, true)
+        usePanelDocument(panelId, "data.chartOption_trucateSpeciesNames", true, true)
 
     const [showTitles, setShowTitles] =
-        usePanelProperty(panelId, "chartOption_showTitles", false, false)
+        usePanelDocument(panelId, "data.chartOption_showTitles", true, false)
 
     const [showGrid, setShowGrid] =
-        usePanelProperty(panelId, "chartOption_showGrid", false, true)
+        usePanelDocument(panelId, "data.chartOption_showGrid", true, true)
 
     const [showLegendWithEvery, setShowLegendWithEvery] =
-        usePanelProperty(panelId, "chartOption_showLegendWithEvery", false, false)
+        usePanelDocument(panelId, "data.chartOption_showLegendWithEvery", true, false)
 
     const [chartWidth, setChartWidth] =
-        usePanelProperty(panelId, "chartOption_width", false, 100)
+        usePanelDocument(panelId, "data.chartOption_width", true, 100)
 
     const [chartHeight, setChartHeight] =
-        usePanelProperty(panelId, "chartOption_height", false, 400)
+        usePanelDocument(panelId, "data.chartOption_height", true, 400)
 
     const [gapBetweenCharts, setGapBetweenCharts] =
-        usePanelProperty(panelId, "chartOption_gapBetween", false, 20)
+        usePanelDocument(panelId, "data.chartOption_gapBetween", true, 20)
 
     return (
 

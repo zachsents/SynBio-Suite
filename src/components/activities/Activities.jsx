@@ -1,4 +1,4 @@
-import { Box, Tabs, Title, Tooltip } from '@mantine/core'
+import { Box, ScrollArea, Tabs, Title, Tooltip } from '@mantine/core'
 import { useActiveActivity, useActivities } from '../../redux/hooks/activityHooks'
 import { getActivity } from '../../activities'
 import { SVGIcon } from '../../icons'
@@ -14,7 +14,6 @@ export default function Activities() {
     // create tabs
     const tabs = useMemo(() => Object.entries(activities).map(([activityId, activityState]) => {
         const activityDef = getActivity(activityId)
-        console.log("tabs being created")
         return (
             <Tabs.Tab
                 key={activityId}
@@ -37,8 +36,18 @@ export default function Activities() {
         const activityDef = getActivity(activityId)
         return (
             <Tabs.Panel value={activityId} key={activityId}>
-                <Title order={6}>{activityDef.title}</Title>
-                <activityDef.component {...activityState} />
+                <Title
+                    order={6}
+                    mx={-6}
+                    px={6}
+                    py={10}
+                    sx={theme => ({ borderBottom: "2px solid " + theme.colors.dark[4] })}
+                >
+                    {activityDef.title}
+                </Title>
+                <ScrollArea style={{ height: "calc(100vh - 40px)" }}>
+                    <activityDef.component {...activityState} />
+                </ScrollArea>
             </Tabs.Panel>
         )
     }), [activities])
@@ -100,7 +109,7 @@ const tabStyles = theme => {
         panel: {
             backgroundColor: dark ? theme.colors.dark[6] : theme.colors.gray[3],
             width: 260,
-            padding: '10px 6px 24px 6px',
+            padding: '0px 6px 0 6px',
             position: 'relative',
         },
     }

@@ -1,20 +1,17 @@
+import { memo, useState } from 'react'
+import { Group, Menu, Text, Tooltip, useMantineTheme } from '@mantine/core'
 import commands from "../../../commands"
-import { Menu } from '@mantine/core'
-import { useState } from 'react'
-import { useOpenPanel } from '../../../redux/hooks/panelsHooks'
-import { titleFromFileName, useFile } from '../../../redux/hooks/workingDirectoryHooks'
 import DragObject from '../../DragObject'
+import { removeUnderscores } from "../../../modules/documentParser"
+import { usePanelActions } from '../../../state/panelStore'
 
+export default memo(ExplorerListItem)
 
-export default function ExplorerListItem({ fileId, icon }) {
+function ExplorerListItem({ documentId, name, nameInfo, type, source, icon }) {
 
-    const file = useFile(fileId)
+    const theme = useMantineTheme()
 
-    // handle opening of file
-    const openPanel = useOpenPanel()
-    const handleOpenFile = () => {
-        openPanel(file)
-    }
+    const { open: openPanel } = usePanelActions()
 
     // context menu states
     const [contextMenuOpen, setContextMenuOpen] = useState(false)
@@ -30,6 +27,21 @@ export default function ExplorerListItem({ fileId, icon }) {
         commands.FileDelete
     ]
 
+    // create drag object up here to avoid repeating ourselves
+    const dragObject = <DragObject
+        title={nameInfo ?
+            <Group spacing="xs">
+                <Text size="sm">{name}</Text>
+                <Text size="sm" color="dimmed">{nameInfo}</Text>
+            </Group> : name
+        }
+        documentId={documentId}
+        type={type}
+        icon={icon}
+        onDoubleClick={() => openPanel(documentId)}
+        onContextMenu={handleRightClick}
+    />
+
     return (
         <Menu
             shadow="md"
@@ -43,14 +55,17 @@ export default function ExplorerListItem({ fileId, icon }) {
             <Menu.Target>
                 {/* have to wrap this in a div so it can add a ref */}
                 <div>
-                    <DragObject
-                        title={titleFromFileName(file.name)}
-                        fileId={fileId}
-                        type={file.objectType}
-                        icon={icon}
-                        onDoubleClick={handleOpenFile}
-                        onContextMenu={handleRightClick}
-                    />
+                    {source ?
+                        <Tooltip
+                            label={<Text color={theme.colors.dark[1]}>Source: {source}</Text>}
+                            color={theme.colors.dark[4]}
+                            openDelay={700}
+                        >
+                            <div>{dragObject}</div>
+                        </Tooltip>
+                        :
+                        dragObject
+                    }
                 </div>
             </Menu.Target>
 
@@ -60,7 +75,7 @@ export default function ExplorerListItem({ fileId, icon }) {
                         key={cmd.id}
                         color={cmd.color}
                         icon={cmd.icon}
-                        onClick={() => cmd.execute(fileId)}
+                        onClick={() => cmd.execute(documentId)}
                     >
                         {cmd.shortTitle}
                     </Menu.Item>

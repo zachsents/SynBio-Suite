@@ -1,19 +1,20 @@
-import React, { forwardRef } from 'react'
+import { forwardRef } from 'react'
 import { Tabs as MantineTabs } from "@mantine/core"
 import TabLabel from './TabLabel'
-import { useClosePanel, usePanelProperty, usePanelType } from '../../redux/hooks/panelsHooks'
-import { titleFromFileName } from '../../redux/hooks/workingDirectoryHooks'
+import { usePanelActions } from '../../state/panelStore'
+import { removeUnderscores } from '../../modules/documentParser'
+import { usePanelDocument, usePanelType } from '../../state/hooks'
 
 const Tab = forwardRef(({ id, ...props }, ref) => {
 
-    const fileHandle = usePanelProperty(id, 'fileHandle')
+    const documentName = usePanelDocument(id, "name")
     const panelType = usePanelType(id)
-    const closePanel = useClosePanel()
+    const {close: closePanel} = usePanelActions()
 
     return (
         <MantineTabs.Tab value={id} ref={ref} {...props}>
             <TabLabel
-                title={titleFromFileName(fileHandle.name)}
+                title={removeUnderscores(documentName)}
                 icon={panelType.icon}
                 id={id}
                 onClose={closePanel}
