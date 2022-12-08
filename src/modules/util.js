@@ -21,3 +21,8 @@ export function deepAssign(obj, path, value) {
     const lastKey = shortPath.pop()
     deepSelect(obj, shortPath)[lastKey] = value
 }
+
+export function betterMax(arr) {
+    if (arr.length)
+        return arr.reduce((accum, current) => current > accum ? current : accum, arr[0])
+}
