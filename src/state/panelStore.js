@@ -1,5 +1,5 @@
 import create from "zustand"
-import { getPanelTypeForDocument } from "../panels"
+import { getPanelTypeForDocument } from "../modules/panels"
 import { getDocumentState } from "./documentStore"
 import { createActionsHook, createFromEntityTemplate } from "./entityTemplate"
 import produce from "immer"

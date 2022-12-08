@@ -1,5 +1,5 @@
-import ExplorerActivityView from "./components/activities/explorer/ExplorerActivityView"
-import { FileIcon, RemoteControlIcon } from "./icons"
+import ExplorerActivityView from "../components/activities/explorer/ExplorerActivityView"
+import { FileIcon, RemoteControlIcon } from "../icons"
 
 export const Activities = {
     LocalFileExplorer: {

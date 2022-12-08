@@ -1,6 +1,6 @@
-import store from "./redux/store"
-import { isPanelOpen, panelsActions, serializePanel } from "./redux/hooks/panelsHooks"
-import { workDirActions, writeToFileHandle } from "./redux/hooks/workingDirectoryHooks"
+import store from "../redux/store"
+import { isPanelOpen, panelsActions, serializePanel } from "../redux/hooks/panelsHooks"
+import { workDirActions, writeToFileHandle } from "../redux/hooks/workingDirectoryHooks"
 
 
 export default {

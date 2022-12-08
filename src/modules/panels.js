@@ -1,7 +1,7 @@
-import SBOLEditorPanel from "./components/panels/sbol-editor/SBOLEditorPanel";
-import SimulatorPanel from "./components/panels/simulator/SimulatorPanel";
-import { CanvasIcon, SimulationIcon } from "./icons";
-import { DocumentTypes } from "./modules/documentTypes";
+import SBOLEditorPanel from "../components/panels/sbol-editor/SBOLEditorPanel";
+import SimulatorPanel from "../components/panels/simulator/SimulatorPanel";
+import { CanvasIcon, SimulationIcon } from "../icons";
+import { DocumentTypes } from "./documentTypes";
 
 
 export const PanelTypes = {

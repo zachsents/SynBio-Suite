@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { Activities } from "../../activities"
+import { Activities } from "../../modules/activities"
 
 
 const initialActivities = Object.fromEntries(

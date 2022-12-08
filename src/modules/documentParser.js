@@ -1,5 +1,4 @@
 import { parseStringPromise as parseXMLString, Builder as XMLBuilder } from "xml2js"
-// const { parseStringPromise: parseXMLString, Builder: XMLBuilder } = require("xml2js")
 import path from "path"
 
 

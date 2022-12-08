@@ -1,11 +1,11 @@
 import store, { panelsSlice } from "../store"
-import commands from "../../commands"
+import commands from "../../modules/commands"
 import { useDebouncedValue } from "@mantine/hooks"
 import { showNotification } from "@mantine/notifications"
 import { createSelector } from "@reduxjs/toolkit"
 import { useEffect, useMemo, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { getPanelType, getPanelTypeForDocument } from "../../panels"
+import { getPanelType, getPanelTypeForDocument } from "../../modules/panels"
 
 const { actions, selectors } = panelsSlice
 

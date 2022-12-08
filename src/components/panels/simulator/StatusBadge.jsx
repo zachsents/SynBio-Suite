@@ -1,6 +1,6 @@
 import { Badge } from '@mantine/core'
 import { useContext } from 'react'
-import { RuntimeStatus } from '../../../runtimeStatus'
+import { RuntimeStatus } from '../../../modules/runtimeStatus'
 import { usePanelDocument } from '../../../state/hooks'
 import { PanelContext } from './SimulatorPanel'
 

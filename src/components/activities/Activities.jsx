@@ -1,6 +1,6 @@
 import { Box, ScrollArea, Tabs, Title, Tooltip } from '@mantine/core'
 import { useActiveActivity, useActivities } from '../../redux/hooks/activityHooks'
-import { getActivity } from '../../activities'
+import { getActivity } from '../../modules/activities'
 import { SVGIcon } from '../../icons'
 import { useMemo } from 'react'
 

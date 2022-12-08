@@ -2,7 +2,7 @@ import { Container, Text, Timeline, Title } from '@mantine/core'
 import React, { useContext } from 'react'
 import { PanelContext } from './SimulatorPanel'
 import ReactTimeAgo from 'react-time-ago'
-import { RuntimeStatus } from '../../../runtimeStatus'
+import { RuntimeStatus } from '../../../modules/runtimeStatus'
 
 import { BsQuestion } from "react-icons/bs"
 import { IoEllipsisHorizontalSharp, IoCheckmarkSharp } from "react-icons/io5"

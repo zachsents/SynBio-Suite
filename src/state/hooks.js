@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { deepSelect } from "../modules/util"
-import { getPanelType } from "../panels"
+import { getPanelType } from "../modules/panels"
 import { useDocumentActions, useDocumentStore } from "./documentStore"
 import { usePanelStore } from "./panelStore"
 

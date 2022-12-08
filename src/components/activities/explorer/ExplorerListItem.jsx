@@ -1,8 +1,7 @@
 import { memo, useState } from 'react'
 import { Group, Menu, Text, Tooltip, useMantineTheme } from '@mantine/core'
-import commands from "../../../commands"
+import commands from "../../../modules/commands"
 import DragObject from '../../DragObject'
-import { removeUnderscores } from "../../../modules/documentParser"
 import { usePanelActions } from '../../../state/panelStore'
 
 export default memo(ExplorerListItem)
