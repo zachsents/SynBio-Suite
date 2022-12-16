@@ -2,9 +2,9 @@
 import { LoadingOverlay, Progress } from '@mantine/core'
 import { useState, useEffect, useRef, useContext } from 'react'
 import { PanelContext } from './SBOLEditorPanel'
-import { usePanelDocument } from '../../../state/hooks'
-import { useDocumentActions, useDocumentStore } from '../../../state/documentStore'
-import { parseFile } from '../../../modules/documentParser'
+import { usePanelDocument } from '../../../modules/state/hooks'
+import { useDocumentActions, useDocumentStore } from '../../../modules/state/documentStore'
+import api from '../../../modules/api'
 
 
 export default function CanvasFrame() {
@@ -15,7 +15,7 @@ export default function CanvasFrame() {
     const documentId = usePanelDocument(panelId)
     const fileName = usePanelDocument(panelId, "source")
     const sbolContent = useDocumentStore(s => {
-        const document = s.entities[documentId]
+        const document = s.documents.entities[documentId]
         const concattedXml = document.localDependencies
             .map(depId => s.entities[depId].xml)
             .join("\n")
@@ -26,7 +26,10 @@ export default function CanvasFrame() {
     // handle changes in SBOL
     const { upsertMany, addDocumentsToFile } = useDocumentActions()
     const setSBOLContent = async newContent => {
-        const newDocs = await parseFile(newContent, fileName)
+        const newDocs = await api.parseFile({
+            content: newContent,
+            name: fileName,
+        })
         upsertMany(newDocs) // add to documents list
         addDocumentsToFile(newDocs.map(doc => doc.id), fileName)    // link to file
 

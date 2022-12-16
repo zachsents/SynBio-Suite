@@ -1,7 +1,7 @@
 import SBOLEditorPanel from "../components/panels/sbol-editor/SBOLEditorPanel";
 import SimulatorPanel from "../components/panels/simulator/SimulatorPanel";
 import { CanvasIcon, SimulationIcon } from "../icons";
-import { DocumentTypes } from "./documentTypes";
+import { DocumentType, DocumentTypes } from "./documentTypes";
 
 
 export const PanelTypes = {
@@ -9,7 +9,7 @@ export const PanelTypes = {
         id: "synbio.panel-type.simulator",
         title: "iBioSim Analysis",
         component: SimulatorPanel,
-        objectTypes: [ DocumentTypes.Analysis ],
+        objectTypes: [ DocumentType.Analysis ],
         icon: SimulationIcon,
 
         deserialize: content => {
@@ -30,7 +30,7 @@ export const PanelTypes = {
         id: "synbio.panel-type.sbol-editor",
         title: "SBOL Canvas",
         component: SBOLEditorPanel,
-        objectTypes: [ DocumentTypes.SBOLComponentDefinition, DocumentTypes.SBOLModuleDefinition ],
+        objectTypes: [ DocumentType.SBOLComponentDefinition, DocumentType.SBOLModuleDefinition ],
         icon: CanvasIcon,
 
         deserialize: content => ({

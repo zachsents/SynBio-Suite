@@ -1,8 +1,8 @@
 import { useEffect } from "react"
-import { deepSelect } from "../modules/util"
-import { getPanelType } from "../modules/panels"
-import { useDocumentActions, useDocumentStore } from "./documentStore"
+import { getPanelType } from "../panels"
+import { useDocument, useDocumentActions, useDocumentStore } from "./documentStore"
 import { usePanelStore } from "./panelStore"
+import _ from "lodash"
 
 export function usePanelDocument(panelId, selector, returnSetter = false, defaultValue) {
 
@@ -13,15 +13,15 @@ export function usePanelDocument(panelId, selector, returnSetter = false, defaul
 
     // if selector is true, return whole document
     if (selector === true)
-        return useDocumentStore(s => s.entities[documentId])
+        return useDocument(documentId)
 
     // if selector is a function, use it as a selector and return partial document
     if (typeof selector === "function")
-        return useDocumentStore(s => selector(s.entities[documentId]))
+        return selector(useDocument(documentId))
 
     // if selector is a string, use it as a path for deep select
     if (typeof selector === "string") {
-        const value = useDocumentStore(s => deepSelect(s.entities[documentId], selector))
+        const value = useDocumentStore(s => _.get(s.documents.entities[documentId], selector))
 
         // if returnSetter is true, return a setter function as well
         if (returnSetter) {

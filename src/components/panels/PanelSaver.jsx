@@ -1,4 +1,3 @@
-import { useAutoSavePanel } from '../../redux/hooks/panelsHooks'
 
 /*
     Extracted this to its own component to prevent unnecessary
@@ -6,6 +5,6 @@ import { useAutoSavePanel } from '../../redux/hooks/panelsHooks'
 */
 
 export default function PanelSaver({ id }) {
-    useAutoSavePanel(id, 4000)
+    // useAutoSavePanel(id, 4000)
     return <></>
 }

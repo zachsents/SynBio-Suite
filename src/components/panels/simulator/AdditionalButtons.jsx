@@ -5,11 +5,11 @@ import { ImImage } from 'react-icons/im'
 import { RiFileExcel2Line } from "react-icons/ri"
 import { AiOutlineTable } from "react-icons/ai"
 import { exportToCSV, exportToExcel } from '../../../modules/export'
-import { titleFromFileName } from '../../../redux/hooks/workingDirectoryHooks'
+import { nameFromFileName } from '../../../modules/fileSystem'
 
 export default function AdditionalButtons({ panelId, results, randomizeColors, handleImageExport, whiteBg }) {
     
-    const panelTitle = titleFromFileName(panelId)
+    const panelTitle = nameFromFileName(panelId)
     const buttonVariant = whiteBg ? 'filled' : 'outline'
 
     return (

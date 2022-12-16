@@ -5,7 +5,7 @@ import { scaleOrdinal } from '@visx/scale'
 import { useState, useContext, useEffect } from 'react'
 import { PanelContext } from './SimulatorPanel'
 import * as colorScheme from "../../../modules/colorScheme"
-import { usePanelDocument } from '../../../state/hooks'
+import { usePanelDocument } from '../../../modules/state/hooks'
 
 
 export function useChartLegend({ seriesLabels = [] }) {

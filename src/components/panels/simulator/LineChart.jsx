@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 import { useContext } from 'react'
 import { PanelContext } from './SimulatorPanel'
 import { truncateSpeciesNames } from './ChartLegend'
-import { usePanelDocument } from '../../../state/hooks'
+import { usePanelDocument } from '../../../modules/state/hooks'
 
 
 const MAX_POINTS = 500

@@ -14,6 +14,10 @@ export async function findFilesInDirectory(dirHandle) {
     return files
 }
 
+export function nameFromFileName(fileName) {
+    return fileName.replace(path.extname(fileName), "")
+}
+
 // function addFileMetadata(handle) {
 //     // handle.id = uuidv4()
 //     // handle.id = handle.name

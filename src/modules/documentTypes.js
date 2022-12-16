@@ -1,95 +1,167 @@
 import { BiWorld } from "react-icons/bi"
 import { IoAnalyticsSharp } from "react-icons/io5"
-import { TbComponents, TbSquareRotated, TbDna, TbBoxModel2 } from "react-icons/tb"
+import { TbComponents, TbSquareRotated, TbDna, TbBoxModel2, TbCode } from "react-icons/tb"
 import { FaShapes } from "react-icons/fa"
 
-export const DocumentTypes = {
-    "synbio.doc-type.analysis": {
-        id: "synbio.doc-type.analysis",
-        title: "Analysis",
-        listTitle: "Analyses",
-        icon: IoAnalyticsSharp,
-        createable: true,
-        extension: '.analysis',
-    },
-    "synbio.doc-type.sbol:ComponentDefinition": {
-        id: "synbio.doc-type.sbol:ComponentDefinition",
-        title: "SBOL Component",
-        listTitle: "SBOL Components",
-        icon: TbSquareRotated,
-        createable: true,
-        extension: '.sbol',
-        badgeLabel: "Component",
-        sbol: true,
-    },
-    "synbio.doc-type.sbol:ModuleDefinition": {
-        id: "synbio.doc-type.sbol:ModuleDefinition",
-        title: "SBOL Module",
-        listTitle: "SBOL Modules",
-        icon: TbComponents,
-        createable: true,
-        badgeLabel: "Module",
-        sbol: true,
-    },
-    "synbio.doc-type.sbol:Sequence": {
-        id: "synbio.doc-type.sbol:Sequence",
-        title: "SBOL Sequence",
-        listTitle: "SBOL Sequences",
-        icon: TbDna,
-        createable: false,
-        badgeLabel: "Sequence",
-        sbol: true,
-    },
-    "synbio.doc-type.sbml": {
-        id: "synbio.doc-type.sbml",
-        title: "SBML Model",
-        listTitle: "SBML Models",
-        icon: TbBoxModel2,
-        createable: false,
-        badgeLabel: "SBML",
-    },
-    "synbio.doc-type.sedml": {
-        id: "synbio.doc-type.sedml",
-        title: "SedML File",
-        listTitle: "SedML Files",
-        icon: FaShapes,
-        createable: false,
-        badgeLabel: "SedML",
-    },
-    "synbio.doc-type.omex-archive": {
-        id: "synbio.doc-type.omex-archive",
-        title: "OMEX Archive",
-        listTitle: "OMEX Archives",
-        icon: BiWorld,
-        createable: false,
-        badgeLabel: "OMEX",
-    },
+
+export const DocumentType = {
+    Analysis: "analysis",
+    SBOLComponentDefinition: "http://sbols.org/v2#ComponentDefinition",
+    SBOLModuleDefinition: "http://sbols.org/v2#ModuleDefinition",
+    // SBOLSequence: "http://sbols.org/v2#Sequence",
+    SBML: "sbml",
+    SedML: "sedml",
+    OMEX: "omex",
 }
 
-// add aliases
-Object.defineProperties(DocumentTypes, {
-    Analysis: {
-        value: "synbio.doc-type.analysis"
-    },
-    SBOLComponentDefinition: {
-        value: "synbio.doc-type.sbol:ComponentDefinition"
-    },
-    SBOLModuleDefinition: {
-        value: "synbio.doc-type.sbol:ModuleDefinition"
-    },
-    SBOLSequence: {
-        value: "synbio.doc-type.sbol:Sequence"
-    },
-    SBML: {
-        value: "synbio.doc-type.sbml"
-    },
-    SedML: {
-        value: "synbio.doc-type.sedml"
-    },
-    OMEX: {
-        value: "synbio.doc-type.omex-archive"
-    },
-})
+export const FileType = {
+    SBOL: "sbol",
+    SBML: "sbml",
+    SedML: "sedml",
+    XML: "xml",
+    Analysis: "analysis",
+    OMEX: "omex",
+}
+
+
+export const DocumentTypes = Object.fromEntries(
+    [
+        {
+            id: DocumentType.Analysis,
+            title: "Analysis",
+            listTitle: "Analyses",
+            icon: IoAnalyticsSharp,
+            createable: true,
+            containingFileTypes: [
+                FileType.Analysis
+            ],
+        },
+        {
+            id: DocumentType.SBOLComponentDefinition,
+            title: "SBOL Component",
+            listTitle: "Components",
+            badgeLabel: "Component",
+            icon: TbSquareRotated,
+            createable: true,
+            containingFileTypes: [
+                FileType.SBOL
+            ],
+        },
+        {
+            id: DocumentType.SBOLModuleDefinition,
+            title: "SBOL Module",
+            listTitle: "Modules",
+            badgeLabel: "Module",
+            icon: TbComponents,
+            createable: true,
+            containingFileTypes: [
+                FileType.SBOL
+            ],
+        },
+        {
+            id: DocumentType.SBML,
+            title: "SBML Model",
+            listTitle: "SBML Models",
+            badgeLabel: "SBML",
+            icon: TbBoxModel2,
+            createable: false,
+            containingFileTypes: [
+                FileType.SBML
+            ],
+        },
+        {
+            id: DocumentType.SedML,
+            title: "SedML File",
+            listTitle: "SedML Files",
+            badgeLabel: "SedML",
+            icon: FaShapes,
+            createable: false,
+            containingFileTypes: [
+                FileType.SedML
+            ],
+        },
+        {
+            id: DocumentType.OMEX,
+            title: "OMEX Archive",
+            listTitle: "OMEX Archives",
+            badgeLabel: "OMEX",
+            icon: BiWorld,
+            createable: false,
+            containingFileTypes: [
+                FileType.OMEX
+            ],
+        },
+    ]
+    .map(item => [item.id, item])
+)
+
+
+export const FileTypes = Object.fromEntries(
+    [
+        {
+            id: FileType.Analysis,
+            title: "Analysis",
+            listTitle: "Analyses",
+            icon: IoAnalyticsSharp,
+            extension: '.analysis',
+            containedDocumentTypes: [
+                DocumentType.Analysis
+            ],
+        },
+        {
+            id: FileType.SBOL,
+            title: "SBOL File",
+            listTitle: "SBOL Files",
+            icon: TbComponents,
+            extension: ".xml",
+            containedDocumentTypes: [
+                DocumentType.SBOLComponentDefinition, 
+                DocumentType.SBOLModuleDefinition
+            ],
+        },
+        {
+            id: FileType.SBML,
+            title: "SBML Model",
+            listTitle: "SBML Models",
+            icon: TbBoxModel2,
+            extension: ".xml",
+            containedDocumentTypes: [
+                DocumentType.SBML,
+            ],
+        },
+        {
+            id: FileType.SedML,
+            title: "SedML File",
+            listTitle: "SedML Files",
+            icon: FaShapes,
+            extension: ".sedml",
+            containedDocumentTypes: [
+                DocumentType.SedML,
+            ],
+        },
+        {
+            id: FileType.OMEX,
+            title: "OMEX Archive",
+            listTitle: "OMEX Archives",
+            icon: BiWorld,
+            extension: ".omex",
+            containedDocumentTypes: [
+                DocumentType.OMEX,
+            ],
+        },
+        {
+            id: FileType.XML,
+            title: "XML File",
+            listTitle: "XML Files",
+            icon: TbCode,
+            extension: ".xml",
+            containedDocumentTypes: [
+            ],
+        },
+    ]
+    .map(item => [item.id, item])
+)
+
 
 export function getDocumentType(id) {
     return DocumentTypes[id]

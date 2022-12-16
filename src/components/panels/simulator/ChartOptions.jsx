@@ -1,7 +1,7 @@
 import { Button, Popover, Slider, Switch, Text } from '@mantine/core'
 import { useContext } from 'react'
 import { GoSettings } from 'react-icons/go'
-import { usePanelDocument } from '../../../state/hooks'
+import { usePanelDocument } from '../../../modules/state/hooks'
 import { PanelContext } from './SimulatorPanel'
 
 export default function ChartOptions() {

@@ -1,0 +1,16 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests yet...\""
+  },
+  "dependencies": {
+    "@rdfjs/formats-common": "^3.1.0",
+    "@rdfjs/types": "^1.1.0",
+    "graphy": "^4.3.5",
+    "xml2js": "^0.4.23"
+  },
+  "type": "module"
+}

@@ -6,10 +6,11 @@ import LineChart from './LineChart'
 import { PanelContext } from './SimulatorPanel'
 import { VscGraphLine } from "react-icons/vsc"
 import AdditionalButtons from './AdditionalButtons'
-import { betterMax, titleFromRunFileName } from "../../../modules/util"
+import { titleFromRunFileName } from "../../../modules/util"
 import { exportToPNG } from '../../../modules/export'
-import { titleFromFileName } from '../../../redux/hooks/workingDirectoryHooks'
-import { usePanelDocument } from '../../../state/hooks'
+import { usePanelDocument } from '../../../modules/state/hooks'
+import _ from "lodash"
+import { nameFromFileName } from '../../../modules/fileSystem'
 
 
 export default function AnalysisResults() {
@@ -38,7 +39,7 @@ export default function AnalysisResults() {
     const handleImageExport = () => {
         exportToPNG(
             resultsConainerRef,
-            titleFromFileName(panelId),
+            nameFromFileName(panelId),
             chartOptions.useWhiteBackground ?
                 '#ffffff' : mantineTheme.colors.dark[7]
         )
@@ -51,7 +52,7 @@ export default function AnalysisResults() {
         return results && [
             0,
             Math.ceil(
-                betterMax(
+                _.max(
                     Object.values(results).map(
                         dataSet => dataSet.slice(1).map(
                             entry => entry.filter((_, i) => indecesShowing.includes(i))

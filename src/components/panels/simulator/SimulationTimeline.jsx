@@ -10,7 +10,7 @@ import { IoMdClose } from "react-icons/io"
 import { TiInputChecked } from "react-icons/ti"
 import { AiOutlineDoubleRight } from "react-icons/ai"
 import { BiRun } from "react-icons/bi"
-import { usePanelDocument } from '../../../state/hooks'
+import { usePanelDocument } from '../../../modules/state/hooks'
 
 
 export default function SimulationTimeline() {

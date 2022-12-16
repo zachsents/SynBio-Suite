@@ -1,24 +1,16 @@
-import { Fragment, useState, memo, useCallback } from "react"
-import CreateNewButton from "./CreateNewButton"
-import { DocumentTypes } from '../../../modules/documentTypes'
+import { useState, memo } from "react"
+// import CreateNewButton from "./CreateNewButton"
+import { DocumentTypes, FileTypes } from '../../../modules/documentTypes'
 import ExplorerListItem from './ExplorerListItem'
-import { useDocumentStore } from '../../../state/documentStore'
-import { documentListCompare } from '../../../state/entityTemplate'
-import { FaSearch } from "react-icons/fa"
+import { usePartialDocuments } from '../../../modules/state/documentStore'
 import { useDebouncedValue } from "@mantine/hooks"
 import ExplorerAccordion from "./ExplorerAccordion"
-import SBOLTree from "./SBOLTree"
 
 
 export default function ExplorerList() {
 
     // grab list of partial documents
-    const documents = useDocumentStore(s => s.ids.map(
-        id => {
-            const { name, type, source } = s.entities[id]
-            return { id, name, type, source }
-        }
-    ), documentListCompare)
+    const documents = usePartialDocuments(["name", "type", "source"])
 
     // search state and handler
     const [rawSearchQuery, setSearchQuery] = useState("")
@@ -35,59 +27,67 @@ export default function ExplorerList() {
     )
 }
 
-const ExplorerListItemContainer = memo(({ searchQuery, documents }) => {
-
-    const documentTypes = Object.values(DocumentTypes)
+const ExplorerListItemContainer = memo(({ searchQuery, documents = [] }) => {
 
     // handle creation
     // WIP TO DO: implement creation
-    const handleCreateObject = useCallback(() => { }, [])
+    // const handleCreateObject = useCallback(() => { }, [])
 
-    // count SBOL files
-    const numberOfSbolFiles = useDocumentStore(s => s.files.filter(file => file.sbol).length)
+    // make map of list item components
+    const documentListItems = Object.fromEntries(
+        documents.map(doc => {
+            const Icon = DocumentTypes[doc.type]?.icon
+            return [
+                doc.id,
+                <ExplorerListItem
+                    documentId={doc.id}
+                    name={doc.name}
+                    type={doc.type}
+                    source={doc.source}
+                    icon={Icon && <Icon />}
+                    key={doc.id}
+                />
+            ]
+        })
+    )
 
     return (
         <ExplorerAccordion
             // topMargin
             defaultValue={[]}
             key={Math.random()}     // this forces re-render and fixes accordion heights
-            data={[
-                {
-                    id: "sbol",
-                    title: "SBOL Files",
-                    titleInfo: numberOfSbolFiles,
-                    content: <SBOLTree />
-                },
-                ...documentTypes.filter(dt => !dt.sbol).map(docType => {
+            data={Object.values(FileTypes).map(fileType => {
 
-                    // pick out the List Items we need
-                    const docList = documents
-                        .filter(doc => doc.type == docType.id && alignsWithSearch(doc.name, searchQuery))
-                        .map(doc =>
-                            <ExplorerListItem
-                                documentId={doc.id} name={doc.name} type={doc.type} source={doc.source}
-                                icon={docType.icon && <docType.icon />} key={doc.id}
-                            />
-                        )
+                const docTypes = fileType.containedDocumentTypes.map(docTypeId => {
+
+                    const docType = DocumentTypes[docTypeId]
+
+                    const docList = documents.filter(
+                        doc => docTypeId == doc.type && alignsWithSearch(doc.name, searchQuery)
+                    )
+                        .map(doc => documentListItems[doc.id])
 
                     return {
-                        id: docType.id,
+                        id: docTypeId,
                         title: docType.listTitle,
                         titleInfo: docList.length,
-                        content: <Fragment key={docType.id}>
-                            {docType.createable &&
-                                <CreateNewButton
-                                    onCreate={handleCreateObject(docType.extension)}
-                                    suggestedName={`New ${docType.title}`}
-                                >
-                                    New {docType.title}
-                                </CreateNewButton>
-                            }
-                            {docList}
-                        </Fragment>
+                        content: docList,
                     }
                 })
-            ]}
+
+                return {
+                    id: fileType.id,
+                    title: fileType.listTitle,
+                    titleInfo: docTypes.reduce((sum, cur) => sum + cur.content.length, 0),
+                    content: docTypes.length == 1 ?
+                        docTypes[0].content
+                        :
+                        <ExplorerAccordion
+                            noBottomBorder
+                            data={docTypes}
+                        />
+                }
+            })}
         />
     )
 })

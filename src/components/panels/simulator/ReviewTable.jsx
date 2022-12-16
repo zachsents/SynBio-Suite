@@ -4,8 +4,8 @@ import { getDocumentType } from '../../../modules/documentTypes'
 import { parameterMap } from './ParameterForm'
 import { PanelContext } from './SimulatorPanel'
 import { TabValues as ParameterSources } from './AnalysisWizard'
-import { usePanelDocument } from '../../../state/hooks'
-import { useDocumentStore } from '../../../state/documentStore'
+import { usePanelDocument } from '../../../modules/state/hooks'
+import { useDocument } from '../../../modules/state/documentStore'
 import { removeUnderscores } from '../../../modules/documentParser'
 
 
@@ -17,11 +17,11 @@ export default function ReviewTable() {
     const parameterSource = usePanelDocument(panelId, "data.parameterSource")
 
     const inputDocumentId = usePanelDocument(panelId, "data.componentDocument")
-    const inputDocument = useDocumentStore(s => s.entities[inputDocumentId])
+    const inputDocument = useDocument(inputDocumentId)
     const inputDocumentType = getDocumentType(inputDocument?.type)
 
     const environmentDocumentId = usePanelDocument(panelId, "data.environmentDocument")
-    const environmentDocument = useDocumentStore(s => s.entities[environmentDocumentId])
+    const environmentDocument = useDocument(environmentDocumentId)
     const environmentDocumentType = getDocumentType(environmentDocument?.type)
 
     const tableContents = () => {

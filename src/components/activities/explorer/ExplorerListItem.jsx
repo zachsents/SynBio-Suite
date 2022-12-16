@@ -1,8 +1,8 @@
 import { memo, useState } from 'react'
 import { Group, Menu, Text, Tooltip, useMantineTheme } from '@mantine/core'
-import commands from "../../../modules/commands"
+// import commands from "../../../modules/commands"
 import DragObject from '../../DragObject'
-import { usePanelActions } from '../../../state/panelStore'
+import { usePanelActions } from '../../../modules/state/panelStore'
 
 export default memo(ExplorerListItem)
 
@@ -23,7 +23,7 @@ function ExplorerListItem({ documentId, name, nameInfo, type, source, icon }) {
 
     // command list
     const contextMenuCommands = [
-        commands.FileDelete
+        // commands.FileDelete
     ]
 
     // create drag object up here to avoid repeating ourselves

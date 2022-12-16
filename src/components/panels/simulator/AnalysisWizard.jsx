@@ -8,7 +8,7 @@ import { IoAnalyticsSharp } from 'react-icons/io5'
 import { BiWorld } from "react-icons/bi"
 import ParameterForm from './ParameterForm'
 import ReviewTable from './ReviewTable'
-import { DocumentTypes } from '../../../modules/documentTypes'
+import { DocumentType, DocumentTypes } from '../../../modules/documentTypes'
 import { useContext } from 'react'
 import { pollStatus, submitAnalysis, terminateAnalysis } from '../../../modules/ibiosim'
 import { useRef } from 'react'
@@ -17,9 +17,9 @@ import { useTimeout } from '@mantine/hooks'
 import { RuntimeStatus } from '../../../modules/runtimeStatus'
 import SimulationTimeline from './SimulationTimeline'
 import { CgCheckO } from "react-icons/cg"
-import { usePanelDocument } from '../../../state/hooks'
+import { usePanelDocument } from '../../../modules/state/hooks'
 import { removeUnderscores } from '../../../modules/documentParser'
-import { useDocumentStore } from '../../../state/documentStore'
+import { useDocument } from '../../../modules/state/documentStore'
 
 
 export const TabValues = {
@@ -48,16 +48,16 @@ export default function AnalysisWizard() {
 
     // Step 1: select component
     const [componentId, setComponentId] = usePanelDocument(panelId, "data.componentDocument", true)
-    const component = useDocumentStore(s => s.entities[componentId])
+    const component = useDocument(componentId)
     const handleComponentChange = docId => {
         setComponentId(docId)
     }
-    const isComponentOMEX = component?.type == DocumentTypes.OMEX
+    const isComponentOMEX = component?.type == DocumentType.OMEX
 
     // Step 2: select parameter source
     const [parameterSource, setParameterSource] = usePanelDocument(panelId, "data.parameterSource", true, TabValues.ENVIRONMENT)
     const [environmentId, setEnvironmentId] = usePanelDocument(panelId, "data.environmentDocument", true)
-    const environment = useDocumentStore(s => s.entities[environmentId])
+    const environment = useDocument(environmentId)
     const handleEnvironmentChange = docId => {
         setEnvironmentId(docId)
     }
@@ -177,7 +177,7 @@ export default function AnalysisWizard() {
                     icon={<TbComponents />}
                 >
                     <Dropzone
-                        allowedTypes={[DocumentTypes.SBOLModuleDefinition, DocumentTypes.SBML, DocumentTypes.OMEX]}
+                        allowedTypes={[DocumentType.SBOLModuleDefinition, DocumentType.SBML, DocumentType.OMEX]}
                         item={component?.name}
                         onItemChange={handleComponentChange}
                     >
@@ -206,7 +206,7 @@ export default function AnalysisWizard() {
                         </Tabs.List>
                         <Tabs.Panel value={TabValues.ENVIRONMENT}>
                             <Dropzone
-                                allowedTypes={[DocumentTypes.OMEX]}
+                                allowedTypes={[DocumentType.OMEX]}
                                 item={environment?.name}
                                 onItemChange={handleEnvironmentChange}
                             >

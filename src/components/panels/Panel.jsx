@@ -1,9 +1,9 @@
 import { forwardRef } from 'react'
 import { Tabs as MantineTabs } from "@mantine/core"
 import TabLabel from './TabLabel'
-import { usePanelActions } from '../../state/panelStore'
+import { usePanelActions } from '../../modules/state/panelStore'
 import { removeUnderscores } from '../../modules/documentParser'
-import { usePanelDocument, usePanelType } from '../../state/hooks'
+import { usePanelDocument, usePanelType } from '../../modules/state/hooks'
 
 const Tab = forwardRef(({ id, ...props }, ref) => {
 

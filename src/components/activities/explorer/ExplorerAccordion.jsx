@@ -4,14 +4,13 @@ export default function ExplorerAccordion({ data, topMargin = false, noBottomBor
     
     const accordionStyles = theme => ({
         control: {
-            padding: '4px 0',
+            padding: '4px 10px',
             borderRadius: 4
         },
         label: {
             fontWeight: 600,
             fontSize: 12,
-            paddingTop: 2,
-            paddingBottom: 2,
+            padding: "2px 0",
             ...(uppercase && { textTransform: 'uppercase' }),
         },
         content: {

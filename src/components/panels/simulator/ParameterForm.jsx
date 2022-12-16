@@ -2,7 +2,7 @@ import { Button, NumberInput, SegmentedControl, Tooltip, Group, Space, Center, B
 import { useForm } from '@mantine/form'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useContext, useEffect } from 'react'
-import { usePanelDocument } from '../../../state/hooks'
+import { usePanelDocument } from '../../../modules/state/hooks'
 import InputWrapper from "./InputWrapper"
 import { PanelContext } from './SimulatorPanel'
 

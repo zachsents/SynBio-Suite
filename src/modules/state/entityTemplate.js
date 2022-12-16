@@ -1,8 +1,8 @@
 import { createEntityAdapter } from "@reduxjs/toolkit"
-import { generateId } from "../modules/randomIds"
+import { generateId } from "../randomIds"
 import shallow from 'zustand/shallow'
 import produce from "immer"
-import { deepAssign } from "../modules/util"
+import _ from "lodash"
 
 
 export function createFromEntityTemplate(set, get) {
@@ -50,15 +50,17 @@ export function createFromEntityTemplate(set, get) {
             deepSet: (id, path, value) => get().actions.setOne(
                 produce(
                     get().entities[id],
-                    draft => deepAssign(draft, path, value)
+                    draft => _.set(draft, path, value)
                 )
             )
         }
     }
 }
 
-export function createActionsHook(useStore) {
-    return () => useStore(s => s.actions)
+export function createActionsHook(useStore, selector) {
+    return () => useStore(        
+        s => (selector?.(s) ?? s).actions
+    )
 }
 
 function ensureEntityHasId(entity) {
@@ -68,10 +70,9 @@ function ensureEntityHasId(entity) {
     }
 }
 
-export function documentListCompare(oldList, newList) {
-    const pullId = doc => doc.id
+export function objectListCompare(oldList, newList) {
     return shallow(
-        oldList.map(pullId),
-        newList.map(pullId)
+        oldList.map(doc => doc.id),
+        newList.map(doc => doc.id)
     )
 }

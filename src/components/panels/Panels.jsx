@@ -3,7 +3,7 @@ import Panel from "./Panel"
 import CenteredTitle from "../CenteredTitle"
 import { useLocalStorage } from "@mantine/hooks"
 import WelcomeScreen from "../WelcomeScreen"
-import { usePanelActions, usePanelStore } from "../../state/panelStore"
+import { usePanelActions, usePanelStore } from "../../modules/state/panelStore"
 
 export default function Panels() {
 

@@ -1,16 +1,16 @@
+import { ActionIcon, Box, Center, Group, LoadingOverlay, Text, Tooltip } from '@mantine/core'
 import FolderSelect from './FolderSelect'
-import { ActionIcon, Center, Group, LoadingOverlay, Text, Tooltip } from '@mantine/core'
 import ExplorerList from './ExplorerList'
 import { IoRefreshOutline, IoFolderOpenOutline } from "react-icons/io5"
 import { useLocalStorage } from '@mantine/hooks'
 import { useState } from 'react'
-import { usePanelActions } from '../../../state/panelStore'
-import { useDocumentActions } from '../../../state/documentStore'
+import { usePanelActions } from "../../../modules/state/panelStore"
+import { useDocumentActions, useDocumentStore } from "../../../modules/state/documentStore"
 
 export default function ExplorerActivityView({ }) {
 
     const { closeAll: closeAllPanels } = usePanelActions()
-    const { openDirectory } = useDocumentActions()
+    const openDirectory = useDocumentStore(s => s.openDirectory)
 
     // loading states
     const [loading, setLoading] = useState(false)

@@ -4,7 +4,7 @@ import { createContext } from 'react'
 import AnalysisResults from './AnalysisResults'
 import PanelSaver from "../PanelSaver"
 import StatusBadge from './StatusBadge'
-import { usePanelDocument } from '../../../state/hooks'
+import { usePanelDocument } from '../../../modules/state/hooks'
 
 
 export const PanelContext = createContext()
