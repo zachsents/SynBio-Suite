@@ -17,7 +17,7 @@ const TabValues = {
 
 export default function SimulatorPanel({ id }) {
 
-    const resultLength = usePanelDocument(id, doc => Object.keys(doc.data.results || {}).length)
+    const resultLength = usePanelDocument(id, doc => doc && Object.keys(doc.data.results || {}).length)
 
     return (
         <PanelContext.Provider value={id}>

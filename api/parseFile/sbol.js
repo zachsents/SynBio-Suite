@@ -1,20 +1,24 @@
-import formats from '@rdfjs/formats-common'
-import { Readable } from 'readable-stream'
+import formats from "@rdfjs/formats-common"
+import produce from "immer"
+import { Readable } from "readable-stream"
+import { parseStringPromise, Builder as XMLBuilder } from "xml2js"
 
 
 export async function parseSBOL(sbolContent, fileName) {
+
+    // parse XML into object
+    const parsedXml = await parseStringPromise(sbolContent)
 
     // create stream from SBOL content
     const inputStream = Readable.from([sbolContent])
     const output = formats.parsers.import("application/rdf+xml", inputStream)
 
-    // wait until stream is finished
-    const quads = []
-    await new Promise((resolve) => {
+    // read stream into array of RDF quads
+    const quads = await new Promise((resolve) => {
+        const quads = []
         output.on("data", quad => quads.push(quad))
-        output.on("end", () => resolve())
+        output.on("end", () => resolve(quads))
     })
-
 
     // get ModuleDefinitions
     const modDefIds = quads
@@ -36,32 +40,55 @@ export async function parseSBOL(sbolContent, fileName) {
     console.log(`Module Definitions: ${modDefIds.length} total, ${rootModDefIds.length} root`)
 
     // map CDs to document objects
-    const compDefs = rootCompDefIds.map(id => ({
-        id: `${fileName}/${id}`,
-        uri: id,
-        name: findSBOLProperty(id, "displayId", quads),
-        shortName: findProperty(id, "http://purl.org/dc/terms/title", quads),
-        type: "http://sbols.org/v2#ComponentDefinition",
-        sourceFile: fileName,
-        dependencies: findDependencies(id, quads),
-    }))
-    
+    const compDefs = rootCompDefIds.map(id => {
+
+        // search for dependencies
+        const dependencies = findDependencies(id, quads)
+
+        return {
+            id: `${fileName}/${id}`,
+            uri: id,
+            name: findSBOLProperty(id, "displayId", quads),
+            shortName: findProperty(id, "http://purl.org/dc/terms/title", quads),
+            type: "http://sbols.org/v2#ComponentDefinition",
+            sourceFile: fileName,
+            dependencies,
+            snippet: buildDependencies(parsedXml, dependencies),
+        }
+    })
+
     // map MDs to document objects
-    const modDefs = rootModDefIds.map(id => ({
-        id: `${fileName}/${id}`,
-        uri: id,
-        name: findSBOLProperty(id, "displayId", quads),
-        shortName: findProperty(id, "http://purl.org/dc/terms/title", quads),
-        type: "http://sbols.org/v2#ModuleDefinition",
-        sourceFile: fileName,
-        dependencies: findDependencies(id, quads),
-    }))
+    const modDefs = rootModDefIds.map(id => {
+
+        // search for dependencies
+        const dependencies = findDependencies(id, quads)
+
+        return {
+            id: `${fileName}/${id}`,
+            uri: id,
+            name: findSBOLProperty(id, "displayId", quads),
+            shortName: findProperty(id, "http://purl.org/dc/terms/title", quads),
+            type: "http://sbols.org/v2#ModuleDefinition",
+            sourceFile: fileName,
+            dependencies,
+            snippet: buildDependencies(parsedXml, dependencies),
+        }
+    })
+
+    // WILO: figuring out how to serialize only the SBOL content we need
 
     return {
         fileType: "sbol",
         documents: [...compDefs, ...modDefs],
     }
 }
+
+
+// These are predicates where the subject should be a dependency of the object
+// (rather than vice versa)
+const reverseDependencyPredicates = [
+    "https://sbolcanvas.org/objectRef",
+]
 
 
 /**
@@ -73,7 +100,8 @@ export async function parseSBOL(sbolContent, fileName) {
  * @return {string[]} 
  */
 function findDependencies(uri, quads, existing = []) {
-    const newDeps = quads.filter(quad => 
+
+    const newDeps = quads.filter(quad =>
         // find quads with our subject
         quad.subject.value == uri &&
 
@@ -87,10 +115,45 @@ function findDependencies(uri, quads, existing = []) {
     // add them to existing array
     newDeps.forEach(quad => existing.push(quad.object.value))
 
+    // look for reverse dependencies
+    const reverseDeps = quads.filter(quad =>
+        // filter by reverse predicates
+        reverseDependencyPredicates.includes(quad.predicate.value) && 
+
+        // find quads with our object
+        quad.object.value == uri &&
+
+        // filter out ones we already have
+        !existing.includes(quad.subject.value)
+    )
+
+    // add them to existing array
+    reverseDeps.forEach(quad => existing.push(quad.subject.value))
+
     // recurse
     newDeps.forEach(quad => findDependencies(quad.object.value, quads, existing))
+    reverseDeps.forEach(quad => findDependencies(quad.subject.value, quads, existing))
 
     return existing
+}
+
+
+function buildDependencies(parsedXmlObject, dependencies) {
+    const xmlBuilder = new XMLBuilder()
+
+    const filteredDocument = produce(parsedXmlObject, draft => {
+        const rdf = draft["rdf:RDF"]
+
+        Object.keys(rdf)
+            .filter(key => key != "$")
+            .forEach(key => {
+                rdf[key] = rdf[key].filter(
+                    item => dependencies.includes(item.$["rdf:about"])
+                )
+            })
+    })
+
+    return xmlBuilder.buildObject(filteredDocument)
 }
 
 

@@ -1,5 +1,5 @@
 import Activities from './components/activities/Activities'
-// import Panels from './components/panels/Panels'
+import Panels from './components/panels/Panels'
 import { NotificationsProvider } from "@mantine/notifications"
 import BrowserCompatiblityCatch from './components/BrowserCompatiblityCatch'
 import { AppShell, ColorSchemeProvider, DEFAULT_THEME, MantineProvider } from '@mantine/core'
@@ -16,8 +16,8 @@ export default function App() {
         colorScheme,
         primaryColor: "indigo",
         other: {
-            inactiveColor: DEFAULT_THEME.colors.dark[2], 
-            activeColor: DEFAULT_THEME.colors.gray[3], 
+            inactiveColor: DEFAULT_THEME.colors.dark[2],
+            activeColor: DEFAULT_THEME.colors.gray[3],
         }
     }
 
@@ -27,12 +27,13 @@ export default function App() {
                 <NotificationsProvider autoClose={5000} limit={8}>
                     <AppShell
                         navbar={<Activities />}
+                        styles={{
+                            root: { width: "100vw" },
+                            main: { padding: 0 },
+                        }}
                     >
-
+                        <Panels />
                     </AppShell>
-
-                    {/* <Panels /> */}
-                
                     <BrowserCompatiblityCatch />
                 </NotificationsProvider>
             </MantineProvider>

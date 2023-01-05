@@ -1,6 +1,6 @@
 import { BiWorld } from "react-icons/bi"
 import { IoAnalyticsSharp } from "react-icons/io5"
-import { TbComponents, TbSquareRotated, TbDna, TbBoxModel2, TbCode } from "react-icons/tb"
+import { TbComponents, TbSquareRotated, TbRun, TbBoxModel2, TbCode } from "react-icons/tb"
 import { FaShapes } from "react-icons/fa"
 
 
@@ -63,7 +63,7 @@ export const DocumentTypes = Object.fromEntries(
             title: "SBML Model",
             listTitle: "SBML Models",
             badgeLabel: "SBML",
-            icon: TbBoxModel2,
+            icon: FaShapes,
             createable: false,
             containingFileTypes: [
                 FileType.SBML
@@ -74,7 +74,7 @@ export const DocumentTypes = Object.fromEntries(
             title: "SedML File",
             listTitle: "SedML Files",
             badgeLabel: "SedML",
-            icon: FaShapes,
+            icon: TbRun,
             createable: false,
             containingFileTypes: [
                 FileType.SedML
@@ -115,8 +115,8 @@ export const FileTypes = Object.fromEntries(
             icon: TbComponents,
             extension: ".xml",
             containedDocumentTypes: [
+                DocumentType.SBOLModuleDefinition,
                 DocumentType.SBOLComponentDefinition, 
-                DocumentType.SBOLModuleDefinition
             ],
         },
         {
@@ -157,6 +157,7 @@ export const FileTypes = Object.fromEntries(
             extension: ".xml",
             containedDocumentTypes: [
             ],
+            hideIfEmpty: true,
         },
     ]
     .map(item => [item.id, item])

@@ -4,6 +4,7 @@ import CenteredTitle from "../CenteredTitle"
 import { useLocalStorage } from "@mantine/hooks"
 import WelcomeScreen from "../WelcomeScreen"
 import { usePanelActions, usePanelStore } from "../../modules/state/panelStore"
+import { Box, Center, Text } from "@mantine/core"
 
 export default function Panels() {
 
@@ -16,19 +17,17 @@ export default function Panels() {
     const [firstTime] = useLocalStorage({ key: 'first-time-visiting', defaultValue: true })
 
     return (
-        <div style={{ flexGrow: 1 }}>
-            {panelIds.length ?
-                <DragTabs
-                    tabComponent={Panel.Tab}
-                    contentComponent={Panel.Content}
-                    tabIds={panelIds}
-                    active={activePanel}
-                    onSelect={setActivePanel}
-                    onReorder={reorderPanels}
-                /> :
-                firstTime ?
-                    <WelcomeScreen /> :
-                    <CenteredTitle>Open a file to start</CenteredTitle>}
-        </div>
+        panelIds.length ?
+            <DragTabs
+                tabComponent={Panel.Tab}
+                contentComponent={Panel.Content}
+                tabIds={panelIds}
+                active={activePanel}
+                onSelect={setActivePanel}
+                onReorder={reorderPanels}
+            /> :
+            firstTime ?
+                <WelcomeScreen /> :
+                <CenteredTitle>Open a file to start</CenteredTitle>
     )
 }

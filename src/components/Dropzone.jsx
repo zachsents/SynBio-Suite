@@ -26,7 +26,7 @@ export default function Dropzone({ children, allowedTypes, item, onItemChange })
         const itemType = event.dataTransfer.types
             .find(key => key.startsWith('type:'))
             .replace('type:', '')
-        
+
         // check if this item is allowed in this dropzone
         setAllowedToDrop(!allowedTypes || allowedTypes.map(at => at.toLowerCase()).includes(itemType))
     }

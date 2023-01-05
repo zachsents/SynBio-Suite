@@ -5,7 +5,7 @@ import { IoRefreshOutline, IoFolderOpenOutline } from "react-icons/io5"
 import { useLocalStorage } from '@mantine/hooks'
 import { useState } from 'react'
 import { usePanelActions } from "../../../modules/state/panelStore"
-import { useDocumentActions, useDocumentStore } from "../../../modules/state/documentStore"
+import { useDocumentStore } from "../../../modules/state/documentStore"
 
 export default function ExplorerActivityView({ }) {
 
@@ -39,7 +39,7 @@ export default function ExplorerActivityView({ }) {
 
     return workingDirectory ?
         <>
-            <LoadingOverlay visible={loading} overlayBlur={1} />
+            <LoadingOverlay visible={loading} />
             <Group position="right" spacing={5} mr={5} >
                 <FolderSelect onSelect={handleDirectorySelection} icon={<IoFolderOpenOutline />}>
                     Switch Folder

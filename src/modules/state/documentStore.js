@@ -1,4 +1,4 @@
-import create, { useStore } from "zustand"
+import create from "zustand"
 import shallow from "zustand/shallow"
 import api from "../api"
 import { findFilesInDirectory } from "../fileSystem"
@@ -72,7 +72,7 @@ export const useDocumentStore = create((set, get) => {
 })
 
 export const useDocumentActions = createActionsHook(useDocumentStore, s => s.documents)
-export const getDocumentState = useDocumentStore.getState
+export const getDocumentStoreState = useDocumentStore.getState
 
 
 export function usePartialDocuments(keys = []) {
@@ -100,5 +100,10 @@ export function usePartialDocuments(keys = []) {
 
 
 export function useDocument(id) {
-    return useStore(s => s.documents.entities[id])
+    return useDocumentStore(s => s.documents.entities[id])
+}
+
+
+export function getFileByName(fileName) {
+    return getDocumentStoreState().files.find(file => file.name == fileName)
 }

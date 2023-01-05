@@ -1,3 +1,4 @@
+import path from "path"
 
 
 export async function findFilesInDirectory(dirHandle) {
@@ -14,9 +15,18 @@ export async function findFilesInDirectory(dirHandle) {
     return files
 }
 
+
+/**
+ * Creates a display name from a file name
+ *
+ * @export
+ * @param {string} fileName
+ * @return {string} 
+ */
 export function nameFromFileName(fileName) {
     return fileName.replace(path.extname(fileName), "")
 }
+
 
 // function addFileMetadata(handle) {
 //     // handle.id = uuidv4()

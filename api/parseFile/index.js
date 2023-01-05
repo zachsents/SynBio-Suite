@@ -1,17 +1,21 @@
-import { parseStringPromise as parseXMLString, Builder as XMLBuilder } from "xml2js"
+import { parseStringPromise as parseXMLString } from "xml2js"
 import { parseSBOL } from "./sbol.js"
 import path from "path"
 
 
 export async function run(context, req) {
-    try {
-        context.res = {
-            body: await parseFile(req.body, req.query.fileName)
-        }
-    }
-    catch (err) {
-        console.log("Encountered an error parsing", req.query.fileName)
-        console.error(err)
+    // try {
+    //     context.res = {
+    //         body: await parseFile(req.body, req.query.fileName)
+    //     }
+    // }
+    // catch (err) {
+    //     console.log("Encountered an error parsing", req.query.fileName)
+    //     console.error(err)
+    // }
+
+    context.res = {
+        body: await parseFile(req.body, req.query.fileName)
     }
 }
 

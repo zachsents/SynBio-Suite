@@ -56,38 +56,47 @@ const ExplorerListItemContainer = memo(({ searchQuery, documents = [] }) => {
             // topMargin
             defaultValue={[]}
             key={Math.random()}     // this forces re-render and fixes accordion heights
-            data={Object.values(FileTypes).map(fileType => {
+            data={
+                Object.values(FileTypes).map(fileType => {
 
-                const docTypes = fileType.containedDocumentTypes.map(docTypeId => {
+                    const docTypes = fileType.containedDocumentTypes.map(docTypeId => {
 
-                    const docType = DocumentTypes[docTypeId]
+                        const docType = DocumentTypes[docTypeId]
 
-                    const docList = documents.filter(
-                        doc => docTypeId == doc.type && alignsWithSearch(doc.name, searchQuery)
-                    )
-                        .map(doc => documentListItems[doc.id])
+                        const docList = documents.filter(
+                            doc => docTypeId == doc.type && alignsWithSearch(doc.name, searchQuery)
+                        )
+                            .map(doc => documentListItems[doc.id])
 
-                    return {
-                        id: docTypeId,
-                        title: docType.listTitle,
-                        titleInfo: docList.length,
-                        content: docList,
+                        return {
+                            id: docTypeId,
+                            title: docType.listTitle,
+                            titleInfo: docList.length,
+                            content: docList,
+                        }
+                    })
+
+                    // calculate number of items
+                    const numItems = docTypes.reduce((sum, cur) => sum + cur.content.length, 0)
+
+                    // see if it should be visible or not
+                    const visible = numItems > 0 || !fileType.hideIfEmpty
+
+                    return visible && {
+                        id: fileType.id,
+                        title: fileType.listTitle,
+                        titleInfo: numItems,
+                        content: docTypes.length == 1 ?
+                            docTypes[0].content
+                            :
+                            <ExplorerAccordion
+                                noBottomBorder
+                                data={docTypes}
+                            />
                     }
                 })
-
-                return {
-                    id: fileType.id,
-                    title: fileType.listTitle,
-                    titleInfo: docTypes.reduce((sum, cur) => sum + cur.content.length, 0),
-                    content: docTypes.length == 1 ?
-                        docTypes[0].content
-                        :
-                        <ExplorerAccordion
-                            noBottomBorder
-                            data={docTypes}
-                        />
-                }
-            })}
+                    .filter(item => !!item)
+            }
         />
     )
 })

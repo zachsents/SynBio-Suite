@@ -1,6 +1,6 @@
 import create from "zustand"
 import { getPanelTypeForDocument } from "../panels"
-import { getDocumentState } from "./documentStore"
+import { getDocumentStoreState } from "./documentStore"
 import { createActionsHook, createFromEntityTemplate } from "./entityTemplate"
 import produce from "immer"
 import { showNotification } from "@mantine/notifications"
@@ -19,7 +19,7 @@ export const usePanelStore = create((set, get) => {
             open: documentId => {
 
                 // look up document in store
-                const document = getDocumentState().find(documentId)
+                const document = getDocumentStoreState().documents.find(documentId)
 
                 // grab panel type for whatever
                 const panelTypeDef = getPanelTypeForDocument(document.type)
@@ -59,11 +59,11 @@ export const usePanelStore = create((set, get) => {
                 get().actions.setActive(null)
             },
 
-            reorder: (from, to) => set(state => produce(state, draft =>
+            reorder: (from, to) => set(state => produce(state, draft => {
                 draft.ids.splice(
                     to, 0, draft.ids.splice(from, 1)[0]
                 )
-            )),
+            })),
         }
     }
 })

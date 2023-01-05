@@ -7,6 +7,7 @@ import { AiOutlineTable } from "react-icons/ai"
 import { exportToCSV, exportToExcel } from '../../../modules/export'
 import { nameFromFileName } from '../../../modules/fileSystem'
 
+
 export default function AdditionalButtons({ panelId, results, randomizeColors, handleImageExport, whiteBg }) {
     
     const panelTitle = nameFromFileName(panelId)

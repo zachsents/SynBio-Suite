@@ -1,24 +1,35 @@
 // import commands from "./commands"
 
+import { getDocumentStoreState, getFileByName } from "./state/documentStore"
+
 export async function submitAnalysis(input, { environment, parameters }) {
 
+    // create FormData object
     var formdata = new FormData()
 
     // ensure that file is serialized and saved
     // await commands.FileSave.execute(input.id)
 
+    // construct input file if we have a snippet
+    const inputFile = input.snippet ?
+        new File([input.snippet], `partial-${input.sourceFile}`) :
+        await getFileByName(input.sourceFile)?.handle.getFile()
+
     // attach input file
-    formdata.append("input", await input.getFile())
+    formdata.append("input", inputFile)
 
     // attach environment if it exists
-    environment && formdata.append("environment", await environment.getFile())
+    environment && formdata.append(
+        "environment",
+        await getFileByName(environment.sourceFile)?.getFile()
+    )
 
     // attach parameters if they exist
     parameters && Object.entries(parameters)
-            .filter(([, value]) => value != null)
-            .forEach(
-                ([key, value]) => formdata.append(key, value)
-            )
+        .filter(([, value]) => value != null)
+        .forEach(
+            ([key, value]) => formdata.append(key, value)
+        )
 
     // send request
     const response = await fetch(import.meta.env.VITE_IBIOSIM_API, {
