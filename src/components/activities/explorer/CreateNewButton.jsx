@@ -3,14 +3,10 @@ import { useClickOutside } from '@mantine/hooks'
 import { useState } from 'react'
 import { AiOutlinePlus } from "react-icons/ai"
 import { getPrimaryColor } from '../../../modules/colorScheme'
-import { useSafeName } from '../../../redux/hooks/workingDirectoryHooks'
 
 export default function CreateNewButton({ onCreate, children, suggestedName }) {
 
     const [creating, setCreating] = useState(false)
-
-    // use a safe name
-    const safeName = useSafeName(suggestedName)
 
     // stop creating if there's a click outside the input
     const clickOutsideRef = useClickOutside(() => setCreating(false))

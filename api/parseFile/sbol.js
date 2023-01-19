@@ -51,9 +51,9 @@ export async function parseSBOL(sbolContent, fileName) {
             name: findSBOLProperty(id, "displayId", quads),
             shortName: findProperty(id, "http://purl.org/dc/terms/title", quads),
             type: "http://sbols.org/v2#ComponentDefinition",
+            entireFile: false,
             sourceFile: fileName,
-            dependencies,
-            snippet: buildDependencies(parsedXml, dependencies),
+            data: buildDependencies(parsedXml, dependencies),
         }
     })
 
@@ -69,13 +69,11 @@ export async function parseSBOL(sbolContent, fileName) {
             name: findSBOLProperty(id, "displayId", quads),
             shortName: findProperty(id, "http://purl.org/dc/terms/title", quads),
             type: "http://sbols.org/v2#ModuleDefinition",
+            entireFile: false,
             sourceFile: fileName,
-            dependencies,
-            snippet: buildDependencies(parsedXml, dependencies),
+            data: buildDependencies(parsedXml, dependencies),
         }
     })
-
-    // WILO: figuring out how to serialize only the SBOL content we need
 
     return {
         fileType: "sbol",
@@ -138,6 +136,14 @@ function findDependencies(uri, quads, existing = []) {
 }
 
 
+/**
+ * Builds an XML document containing only what is needed as specified
+ * by the dependencies.
+ *
+ * @param {*} parsedXmlObject
+ * @param {string[]} dependencies
+ * @return {string} 
+ */
 function buildDependencies(parsedXmlObject, dependencies) {
     const xmlBuilder = new XMLBuilder()
 

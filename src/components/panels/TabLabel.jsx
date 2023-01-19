@@ -2,6 +2,7 @@ import React from 'react'
 import { Group, ActionIcon } from '@mantine/core'
 import { IoClose } from "react-icons/io5"
 import { SVGIcon } from '../../icons'
+import { usePanelDocument } from '../../modules/state/hooks'
 
 export default function TabLabel({ title, icon, id, onClose }) {
 
@@ -10,11 +11,19 @@ export default function TabLabel({ title, icon, id, onClose }) {
         event.stopPropagation()
     }
 
+    const saving = usePanelDocument(id, "saving")
+
     return (
         <Group sx={groupStyle} spacing='sm' >
             <SVGIcon icon={icon} size='md' />
-            <span style={spanStyle}>{title}</span>
-            <ActionIcon sx={iconStyle} onMouseUp={handleClose} ><IoClose /></ActionIcon>
+            <span style={spanStyle}>{saving ? "Saving..." : title}</span>
+            <ActionIcon
+                sx={iconStyle}
+                onMouseUp={handleClose}
+                disabled={saving}
+            >
+                <IoClose />
+            </ActionIcon>
         </Group>
     )
 }

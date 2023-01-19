@@ -116,27 +116,28 @@ export default function DragTabs({
 
     return (
         !!tabIds.length &&
-            <div
-                style={containerStyle}
-                onMouseUp={handleMouseUp}
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}>
-                <Tabs variant="outline" styles={tabsStyles} value={active} >
-                    <Tabs.List>
-                        {tabIds.map((id, i) =>
-                            <TabComponent
-                                id={id}
-                                key={id}
-                                onMouseDown={handleMouseDown(id, i)}
-                                ref={el => tabRefs.current[i] = el}
-                            />
-                        )}
-                    </Tabs.List>
-                    {tabIds.map(id =>
-                        <ContentComponent id={id} key={id} />
+        <div
+            style={containerStyle}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+        >
+            <Tabs variant="outline" styles={tabsStyles} value={active} >
+                <Tabs.List>
+                    {tabIds.map((id, i) =>
+                        <TabComponent
+                            id={id}
+                            key={id}
+                            onMouseDown={handleMouseDown(id, i)}
+                            ref={el => tabRefs.current[i] = el}
+                        />
                     )}
-                </Tabs>
-            </div>
+                </Tabs.List>
+                {tabIds.map(id =>
+                    <ContentComponent id={id} key={id} />
+                )}
+            </Tabs>
+        </div>
     )
 }
 

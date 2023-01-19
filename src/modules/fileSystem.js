@@ -1,6 +1,13 @@
 import path from "path"
 
 
+/**
+ * Searches a directory for files.
+ *
+ * @export
+ * @param {FileSystemDirectoryHandle} dirHandle
+ * @return {FileSystemFileHandle[]} 
+ */
 export async function findFilesInDirectory(dirHandle) {
     const files = []
 

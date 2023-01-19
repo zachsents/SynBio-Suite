@@ -18,6 +18,13 @@ export const usePanelStore = create((set, get) => {
 
             open: documentId => {
 
+                // check if there's already a panel open for this document
+                const existingPanel = Object.values(get().entities).find(panel => panel.document == documentId)
+                if(existingPanel) {
+                    get().actions.setActive(existingPanel.id)
+                    return
+                }
+
                 // look up document in store
                 const document = getDocumentStoreState().documents.find(documentId)
 
@@ -64,6 +71,11 @@ export const usePanelStore = create((set, get) => {
                     to, 0, draft.ids.splice(from, 1)[0]
                 )
             })),
+
+            closePanelForDocument: documentId => {
+                const panel = Object.values(get().entities).find(panel => panel.document == documentId)
+                panel && get().actions.close(panel.id)
+            },
         }
     }
 })

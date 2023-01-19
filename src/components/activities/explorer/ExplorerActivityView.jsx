@@ -19,7 +19,8 @@ export default function ExplorerActivityView({ }) {
     const [firstTime, setFirstTime] = useLocalStorage({ key: 'first-time-visiting', defaultValue: true })
 
     // working directory state and handler
-    const [workingDirectory, setWorkingDirectory] = useState()
+    const workingDirectory = useDocumentStore(s => s.workingDirectory)
+    const setWorkingDirectory = useDocumentStore(s => s.setWorkingDirectory)
     const changeDirectory = dirHandle => {
         setLoading(true)                    // loading...
         setWorkingDirectory(dirHandle)      // set internal state

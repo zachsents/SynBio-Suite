@@ -2,9 +2,14 @@ import { Badge, ScrollArea, Space, Tabs } from '@mantine/core'
 import AnalysisWizard from './AnalysisWizard'
 import { createContext } from 'react'
 import AnalysisResults from './AnalysisResults'
-import PanelSaver from "../PanelSaver"
+import AutoSaver from "../AutoSaver"
 import StatusBadge from './StatusBadge'
 import { usePanelDocument } from '../../../modules/state/hooks'
+import { getFileByName, useDocument } from '../../../modules/state/documentStore'
+import { useContext } from 'react'
+import { useDebouncedValue } from '@mantine/hooks'
+import { useDocumentSaving } from '../../../modules/saving'
+import { useEffect } from 'react'
 
 
 export const PanelContext = createContext()
@@ -17,7 +22,8 @@ const TabValues = {
 
 export default function SimulatorPanel({ id }) {
 
-    const resultLength = usePanelDocument(id, doc => doc && Object.keys(doc.data.results || {}).length)
+    const documentId = usePanelDocument(id)
+    const resultLength = useDocument(documentId, doc => doc && Object.keys(doc.data.results || {}).length)
 
     return (
         <PanelContext.Provider value={id}>
@@ -40,9 +46,50 @@ export default function SimulatorPanel({ id }) {
                     <AnalysisResults />
                 </Tabs.Panel>
             </Tabs>
-            <PanelSaver id={id} />
+            <Saver />
         </PanelContext.Provider>
     )
+}
+
+function Saver() {
+
+    const panelId = useContext(PanelContext)
+    const documentId = usePanelDocument(panelId)
+
+    // grab document props
+    const sourceFileName = useDocument(documentId, doc => doc.sourceFile)
+    const docData = JSON.stringify(
+        useDocument(documentId, doc => doc.data)
+    )
+
+    // debounce data
+    const [debouncedData] = useDebouncedValue(docData, 1000)
+
+    // set document as saving when data changes
+    const finishSave = useDocumentSaving(documentId, [docData])
+
+    // function to save -- written outside of useEffect for async/await goodness
+    const save = async newContent => {
+        console.debug(`Saving ${sourceFileName}...`)
+        
+        // grab source file handle
+        const sourceFileHandle = getFileByName(sourceFileName).handle
+
+        // create write stream and write to file
+        const writableStream = await sourceFileHandle.createWritable()
+        await writableStream.write(newContent)
+        await writableStream.close()
+
+        console.debug("Saved!")
+    }
+
+    // execute save when debounced data changes
+    useEffect(() => {
+        save(debouncedData)
+            .then(finishSave)
+    }, [debouncedData])
+
+    return <></>
 }
 
 const tabStyles = theme => ({

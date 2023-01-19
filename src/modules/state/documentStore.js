@@ -1,8 +1,10 @@
+import produce from "immer"
 import create from "zustand"
 import shallow from "zustand/shallow"
 import api from "../api"
 import { findFilesInDirectory } from "../fileSystem"
 import { createActionsHook, createFromEntityTemplate } from "./entityTemplate"
+import { getPanelState } from "./panelStore"
 
 
 export const useDocumentStore = create((set, get) => {
@@ -30,6 +32,7 @@ export const useDocumentStore = create((set, get) => {
                 fileHandles.map(async fileHandle => {
                     const file = await fileHandle.getFile()
 
+                    // parse file using API
                     const { fileType, documents: documentsInFile } = await api.parseFile({
                         content: await file.text(),
                         name: file.name,
@@ -49,25 +52,70 @@ export const useDocumentStore = create((set, get) => {
             )
 
             // add documents to store
-            get().documents.actions.addMany(documents.flat())
+            get().documents.actions.setAll(documents.flat())
 
             // add files to store
             get().setFiles(files)
         },
 
-        // ...template,
-        // actions: {
-        //     ...templateActions,
+        workingDirectory: null,
+        setWorkingDirectory: newWorkDir => set({ workingDirectory: newWorkDir }),
 
-
-
-        //     addDocumentsToFile: (documentIds, fileName) => set(produce(draft => {
-        //         const file = draft.files.find(file => file.name == fileName)
-        //         documentIds.forEach(docId => !file.documents.includes(docId) && file.documents.push(docId))
-        //     }))
-        // },
         files: [],
-        setFiles: files => set(() => ({ files }))
+        setFiles: files => set(() => ({ files })),
+        addDocumentsToFile: (documentIds, fileName) => set(produce(draft => {
+            const file = draft.files.find(file => file.name == fileName)
+            documentIds.forEach(docId => !file.documents.includes(docId) && file.documents.push(docId))
+        })),
+
+        updateFile: async (fileName, newContent) => {
+            const oldDocs = Object.values(get().documents.entities).filter(doc => doc.sourceFile == fileName)
+
+            // parse new file content to get new list of documents
+            const { documents: newDocs } = await api.parseFile({
+                content: newContent,
+                name: fileName,
+            })
+
+            set(produce(draft => {
+                // update document list for file
+                draft.files.find(file => file.name == fileName).documents = newDocs.map(doc => doc.id)
+
+                // remove old documents
+                const oldDocIds = oldDocs.map(doc => doc.id)
+                oldDocIds.forEach(docId => {
+                    delete draft.documents.entities[docId]
+                })
+                draft.documents.ids = draft.documents.ids.filter(id => !oldDocIds.includes(id))
+
+                // add new documents
+                newDocs.forEach(doc => {
+                    draft.documents.ids.push(doc.id)
+                    draft.documents.entities[doc.id] = doc
+                })
+            }))
+        },
+
+        deleteFile: async fileName => {
+            // delete actual file
+            await get().workingDirectory.removeEntry(fileName)
+
+            // figure out which documents to remove
+            const docsToRemove = Object.values(get().documents.entities)
+                .filter(doc => doc.sourceFile == fileName)
+                .map(doc => doc.id)
+
+            // close panels
+            docsToRemove.forEach(docId => getPanelState().actions.closePanelForDocument(docId))
+            
+            // remove associated documents
+            get().documents.actions.removeMany(docsToRemove)
+
+            // remove file
+            set(s => ({
+                files: s.files.filter(file => file.name != fileName)
+            }))
+        },
     }
 })
 
@@ -99,8 +147,11 @@ export function usePartialDocuments(keys = []) {
 }
 
 
-export function useDocument(id) {
-    return useDocumentStore(s => s.documents.entities[id])
+export function useDocument(id, selector, equality) {
+    return useDocumentStore(s => {
+        const doc = s.documents.entities[id]
+        return selector?.(doc) ?? doc
+    }, equality)
 }
 
 

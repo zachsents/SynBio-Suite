@@ -48,3 +48,10 @@ export function usePanelType(panelId) {
         usePanelStore(s => s.entities[panelId].type)
     )
 }
+
+export function useEventListener(node, event, listener, dependencies = []) {
+    useEffect(() => {
+        node.addEventListener(event, listener)
+        return () => window.removeEventListener(event, listener)
+    }, dependencies)
+}

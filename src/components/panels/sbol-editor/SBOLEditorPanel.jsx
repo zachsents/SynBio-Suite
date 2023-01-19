@@ -1,6 +1,12 @@
-import { Tabs, Center } from '@mantine/core'
+import { useDebouncedValue } from '@mantine/hooks'
+import { useEffect } from 'react'
+import { useContext } from 'react'
 import { createContext } from 'react'
-import PanelSaver from '../PanelSaver'
+import api from '../../../modules/api'
+import { useDocumentSaving } from '../../../modules/saving'
+import { getFileByName, useDocument, useDocumentActions } from '../../../modules/state/documentStore'
+import { usePanelDocument } from '../../../modules/state/hooks'
+import AutoSaver from '../AutoSaver'
 import CanvasFrame from './CanvasFrame'
 
 export const PanelContext = createContext()
@@ -9,41 +15,54 @@ export default function SBOLEditorPanel({ id }) {
 
     return (
         <PanelContext.Provider value={id}>
-            {/* <Tabs styles={tabStyles} active={activeTab} onTabChange={setActiveTab}>
-                <Tabs.Tab label="Design" >
-                    <DesignView />
-                </Tabs.Tab>
-                <Tabs.Tab label="Export" >
-                    <Center sx={centerStyle}>
-                        <h3>COMING SOON</h3>
-                        <p>Export to SBOL, render images, etc.</p>
-                    </Center>
-                </Tabs.Tab>
-                <Tabs.Tab label="Upload" >
-                    <Center sx={centerStyle}>
-                        <h3>COMING SOON</h3>
-                        <p>Upload to SynBioHub</p>
-                    </Center>
-                </Tabs.Tab>
-            </Tabs> */}
             <CanvasFrame />
-            <PanelSaver id={id} />
+            <Saver />
         </PanelContext.Provider>
     )
 }
 
-const centerStyle = {
-    minHeight: '50vh',
-    flexDirection: 'column'
-}
 
-const tabStyles = theme => ({
-    tabControl: {
-        width: 120,
-        textTransform: 'uppercase',
-        fontWeight: 600
-    },
-    tabsList: {
-        // backgroundColor: theme.colors.dark[6]
+function Saver() {
+
+    const panelId = useContext(PanelContext)
+    const documentId = usePanelDocument(panelId)
+
+    // grab document props
+    const sourceFileName = useDocument(documentId, doc => doc.sourceFile)
+    const docData = useDocument(documentId, doc => doc.data)
+
+    // debounce data
+    const [debouncedData] = useDebouncedValue(docData, 2000)
+
+    // set document as saving when data changes
+    const finishSave = useDocumentSaving(documentId, [docData])
+
+    // function to save -- written outside of useEffect for async/await goodness
+    const save = async newContent => {
+        console.debug(`Saving ${sourceFileName}...`)
+        
+        // grab source file handle
+        const sourceFileHandle = getFileByName(sourceFileName).handle
+
+        // hit API to merge in our snippet and create an entire file to write
+        const newFileContent = await api.mergeSBOLFiles({
+            sourceFile: await sourceFileHandle.getFile(),
+            newContent,
+        })
+
+        // create write stream and write to file
+        const writableStream = await sourceFileHandle.createWritable()
+        await writableStream.write(newFileContent)
+        await writableStream.close()
+
+        console.debug("Saved!")
     }
-})
+
+    // execute save when debounced data changes
+    useEffect(() => {
+        save(debouncedData)
+            .then(finishSave)
+    }, [debouncedData])
+
+    return <></>
+}

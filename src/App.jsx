@@ -4,6 +4,7 @@ import { NotificationsProvider } from "@mantine/notifications"
 import BrowserCompatiblityCatch from './components/BrowserCompatiblityCatch'
 import { AppShell, ColorSchemeProvider, DEFAULT_THEME, MantineProvider } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
+import { ModalsProvider } from '@mantine/modals'
 
 
 
@@ -25,16 +26,18 @@ export default function App() {
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
             <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
                 <NotificationsProvider autoClose={5000} limit={8}>
-                    <AppShell
-                        navbar={<Activities />}
-                        styles={{
-                            root: { width: "100vw" },
-                            main: { padding: 0 },
-                        }}
-                    >
-                        <Panels />
-                    </AppShell>
-                    <BrowserCompatiblityCatch />
+                    <ModalsProvider>
+                        <AppShell
+                            navbar={<Activities />}
+                            styles={{
+                                root: { width: "100vw" },
+                                main: { padding: 0 },
+                            }}
+                        >
+                            <Panels />
+                        </AppShell>
+                        <BrowserCompatiblityCatch />
+                    </ModalsProvider>
                 </NotificationsProvider>
             </MantineProvider>
         </ColorSchemeProvider>

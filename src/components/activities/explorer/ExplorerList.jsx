@@ -5,12 +5,13 @@ import ExplorerListItem from './ExplorerListItem'
 import { usePartialDocuments } from '../../../modules/state/documentStore'
 import { useDebouncedValue } from "@mantine/hooks"
 import ExplorerAccordion from "./ExplorerAccordion"
+import CreateNewButton from "./CreateNewButton"
 
 
 export default function ExplorerList() {
 
     // grab list of partial documents
-    const documents = usePartialDocuments(["name", "type", "source"])
+    const documents = usePartialDocuments(["name", "type"])
 
     // search state and handler
     const [rawSearchQuery, setSearchQuery] = useState("")
@@ -27,7 +28,8 @@ export default function ExplorerList() {
     )
 }
 
-const ExplorerListItemContainer = memo(({ searchQuery, documents = [] }) => {
+
+function ExplorerListItemContainer({ searchQuery, documents = [] }) {
 
     // handle creation
     // WIP TO DO: implement creation
@@ -41,10 +43,8 @@ const ExplorerListItemContainer = memo(({ searchQuery, documents = [] }) => {
                 doc.id,
                 <ExplorerListItem
                     documentId={doc.id}
-                    name={doc.name}
-                    type={doc.type}
-                    source={doc.source}
                     icon={Icon && <Icon />}
+                    showSource={documents.some(d => d.id != doc.id && d.name == doc.name && d.type == doc.type)}
                     key={doc.id}
                 />
             ]
@@ -72,7 +72,10 @@ const ExplorerListItemContainer = memo(({ searchQuery, documents = [] }) => {
                             id: docTypeId,
                             title: docType.listTitle,
                             titleInfo: docList.length,
-                            content: docList,
+                            content: <>
+                            <CreateNewButton />
+                            {docList}
+                            </>,
                         }
                     })
 
@@ -99,7 +102,7 @@ const ExplorerListItemContainer = memo(({ searchQuery, documents = [] }) => {
             }
         />
     )
-})
+}
 
 
 function alignsWithSearch(item, query) {

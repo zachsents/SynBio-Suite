@@ -1,7 +1,8 @@
-import { Accordion } from '@mantine/core'
+import { Accordion, Button, Group, Text } from '@mantine/core'
+import { TbPlus } from 'react-icons/tb'
 
-export default function ExplorerAccordion({ data, topMargin = false, noBottomBorder = false, uppercase = true, ...props }) {
-    
+export default function ExplorerAccordion({ data, showCreateButton = false, topMargin = false, noBottomBorder = false, uppercase = true, ...props }) {
+
     const accordionStyles = theme => ({
         control: {
             padding: '4px 10px',
@@ -15,7 +16,7 @@ export default function ExplorerAccordion({ data, topMargin = false, noBottomBor
         },
         content: {
             fontSize: 12,
-            padding: '5px 0 10px 10px'
+            padding: '5px 10px 10px 10px'
         },
         item: {
             // omit bottom border on last child
@@ -33,6 +34,13 @@ export default function ExplorerAccordion({ data, topMargin = false, noBottomBor
                         {child.title} {child.titleInfo != null && `(${child.titleInfo})`}
                     </Accordion.Control>
                     <Accordion.Panel>
+                        {showCreateButton &&
+                            <Button variant="subtle" fullWidth compact>
+                                <Group>
+                                    <Text><TbPlus /></Text>
+                                    <Text>Create New</Text>
+                                </Group>
+                            </Button>}
                         {child.content}
                     </Accordion.Panel>
                 </Accordion.Item>
