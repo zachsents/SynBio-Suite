@@ -1,61 +1,93 @@
-import { useState, useEffect } from "react"
-import { Center, Title, Text, Group, useMantineTheme, ActionIcon } from "@mantine/core"
+import { Center, Title, Text, Group, useMantineTheme, ActionIcon, Stack } from "@mantine/core"
+import { Dropzone as MantineDropzone } from "@mantine/dropzone"
 
 import { CgCheckO } from "react-icons/cg"
-import { AiOutlineSmile } from "react-icons/ai"
 import { IoClose } from "react-icons/io5"
+import { TbFile } from "react-icons/tb"
+import { getFile } from "../redux/hooks/workingDirectoryHooks"
 
 
 export default function Dropzone({ children, allowedTypes, item, onItemChange }) {
 
     const theme = useMantineTheme()
 
-    // controls look of dropzone -- true, false, or nullish
-    const [allowedToDrop, setAllowedToDrop] = useState()
-
-    // drag handlers 
-
-    const handleDragLeave = event => {
-        setAllowedToDrop(null)
+    const handleDrop = ([file]) => {
+        onItemChange?.(file)
     }
 
-    const handleDragOver = event => {
-        event.preventDefault()  // necessary for allowing a drag
-        event.dataTransfer.dropEffect = "link"
+    const handleSyntheticDrop = async event => {
+        const fileId = event.dataTransfer.getData("fileId")
 
-        const itemType = event.dataTransfer.types
-            .find(key => key.startsWith('type:'))
-            .replace('type:', '')
-        
-        // check if this item is allowed in this dropzone
-        setAllowedToDrop(!allowedTypes || allowedTypes.includes(itemType))
+        if(!Object.values(allowedTypes).flat().some(ext => fileId.endsWith(ext)))
+            return
+
+        const fileHandle = getFile(fileId)
+        onItemChange?.(await fileHandle?.getFile())
     }
 
-    const handleDrop = event => {
-        allowedToDrop && onItemChange?.(event.dataTransfer.getData("fileId") || event.dataTransfer.getData("name"))
-        setAllowedToDrop(null)
-    }
+    return item ?
+        <Center sx={successStyles.container} >
+            <CgCheckO style={successStyles.icon(theme)} />
+            <Title order={3} sx={successStyles.title}>{item}</Title>
+            <ActionIcon sx={successStyles.removeIcon} onClick={() => onItemChange?.(null)} ><IoClose /></ActionIcon>
+        </Center>
+        :
+        <MantineDropzone
+            onDrop={handleDrop}
+            onReject={(files) => console.log('rejected files', files)}
+            // maxSize={3 * 1024 ** 2}
+            accept={allowedTypes}
+            multiple={false}
+            radius="lg"
+            sx={theme => ({
+                "&[data-reject], &[data-accept]": {
+                    backgroundColor: theme.colors[theme.primaryColor][8],
+                },
+            })}
+            onDropCapture={handleSyntheticDrop}
+        >
+            <Group position="center" spacing="xl" style={{ minHeight: 220, pointerEvents: 'none' }}>
+                <MantineDropzone.Accept>
+                    <TbFile size={24} />
+                </MantineDropzone.Accept>
+                <MantineDropzone.Reject>
+                    <TbFile size={24} />
+                </MantineDropzone.Reject>
+                <MantineDropzone.Idle>
+                    <TbFile size={24} />
+                </MantineDropzone.Idle>
 
-    return (
-        item ?
-            <Center sx={successStyles.container} >
-                <CgCheckO style={successStyles.icon(theme)} />
-                <Title order={3} sx={successStyles.title}>{item}</Title>
-                <ActionIcon sx={successStyles.removeIcon} onClick={() => onItemChange(null)} ><IoClose /></ActionIcon>
-            </Center> :
-            <Center
-                sx={containerStyle(allowedToDrop)}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-            >
-                {allowedToDrop == null ?
-                    <Title order={3} sx={titleStyle}>{children}</Title> :
-                    allowedToDrop ?
-                        <Text sx={iconStyle}><AiOutlineSmile /></Text> :
-                        <Title order={3} sx={errorTitleStyle}>Item not allowed</Title>}
-            </Center>
-    )
+                <Stack align="center" spacing="xs">
+                    <Text size="xl" inline>
+                        Drag & drop a file
+                    </Text>
+                    <Text size="sm" color="dimmed">
+                        {children}
+                    </Text>
+                </Stack>
+            </Group>
+        </MantineDropzone>
+
+    // return (
+    //     item ?
+    //         <Center sx={successStyles.container} >
+    //             <CgCheckO style={successStyles.icon(theme)} />
+    //             <Title order={3} sx={successStyles.title}>{item}</Title>
+    //             <ActionIcon sx={successStyles.removeIcon} onClick={() => onItemChange(null)} ><IoClose /></ActionIcon>
+    //         </Center> :
+    //         <Center
+    //             sx={containerStyle(allowedToDrop)}
+    //             onDragOver={handleDragOver}
+    //             onDragLeave={handleDragLeave}
+    //             onDrop={handleDrop}
+    //         >
+    //             {allowedToDrop == null ?
+    //                 <Title order={3} sx={titleStyle}>{children}</Title> :
+    //                 allowedToDrop ?
+    //                     <Text sx={iconStyle}><AiOutlineSmile /></Text> :
+    //                     <Title order={3} sx={errorTitleStyle}>Item not allowed</Title>}
+    //         </Center>
+    // )
 }
 
 const successStyles = {

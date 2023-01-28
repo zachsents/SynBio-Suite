@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { Tabs } from '@mantine/core'
+import { useBrowserCompatbility } from "../BrowserCompatiblityProvider"
 
 
 export default function DragTabs({
@@ -114,14 +115,18 @@ export default function DragTabs({
         !tabIds.length && setDragState(null)
     }, [tabIds.length])
 
+    // browser compatibility
+    const { fileSystemCompatible } = useBrowserCompatbility()
+
     return (
         !!tabIds.length &&
-            <div
-                style={containerStyle}
-                onMouseUp={handleMouseUp}
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}>
-                <Tabs variant="outline" styles={tabsStyles} value={active} >
+        <div
+            style={containerStyle}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}>
+            <Tabs variant="outline" styles={tabsStyles} value={active} >
+                {fileSystemCompatible &&
                     <Tabs.List>
                         {tabIds.map((id, i) =>
                             <TabComponent
@@ -131,12 +136,12 @@ export default function DragTabs({
                                 ref={el => tabRefs.current[i] = el}
                             />
                         )}
-                    </Tabs.List>
-                    {tabIds.map(id =>
-                        <ContentComponent id={id} key={id} />
-                    )}
-                </Tabs>
-            </div>
+                    </Tabs.List>}
+                {tabIds.map(id =>
+                    <ContentComponent id={id} key={id} />
+                )}
+            </Tabs>
+        </div>
     )
 }
 

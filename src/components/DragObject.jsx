@@ -12,7 +12,7 @@ export default function DragObject({ icon, type, title, fileId, ...props }) {
         // so we'll do a workaround
         event.dataTransfer.setData(`type:${type}`, "")
 
-        event.dataTransfer.effectAllowed = 'link'
+        event.dataTransfer.effectAllowed = 'all'
     }
 
     return (

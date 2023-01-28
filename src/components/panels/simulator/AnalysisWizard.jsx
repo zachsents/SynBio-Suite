@@ -19,6 +19,7 @@ import { useTimeout } from '@mantine/hooks'
 import { RuntimeStatus } from '../../../runtimeStatus'
 import SimulationTimeline from './SimulationTimeline'
 import { CgCheckO } from "react-icons/cg"
+import { useBrowserCompatbility } from '../../BrowserCompatiblityProvider'
 
 
 export const TabValues = {
@@ -46,20 +47,31 @@ export default function AnalysisWizard() {
     const nextStep = () => setActiveStep((current) => (current < numSteps ? current + 1 : current))
     const prevStep = () => setActiveStep((current) => (current > 0 ? current - 1 : current))
 
+    // browser compatibility
+    const { fileSystemCompatible } = useBrowserCompatbility()
+
     // Step 1: select component
     const [componentId, setComponentId] = usePanelProperty(panelId, 'component', false)
-    const component = useFile(componentId)
-    const handleComponentChange = name => {
-        setComponentId(name)
+    const componentFile = useFile(componentId)
+    const [simpleComponentFile, setSimpleComponentFile] = useState()
+    const component = componentFile ?? simpleComponentFile
+    const handleComponentChange = file => {
+        fileSystemCompatible ?
+            setComponentId(file?.name) :
+            setSimpleComponentFile(file)
     }
     const isComponentOMEX = component?.objectType == ObjectTypes.OMEX.id
 
     // Step 2: select parameter source
     const [parameterSource, setParameterSource] = usePanelProperty(panelId, 'parameterSource', false, TabValues.ENVIRONMENT)
     const [environmentId, setEnvironmentId] = usePanelProperty(panelId, 'environment', false)
-    const environment = useFile(environmentId)
-    const handleEnvironmentChange = name => {
-        setEnvironmentId(name)
+    const environmentFile = useFile(environmentId)
+    const [simpleEnvironmentFile, setSimpleEnvironmentFile] = useState()
+    const environment = environmentFile ?? simpleEnvironmentFile
+    const handleEnvironmentChange = file => {
+        fileSystemCompatible ?
+            setEnvironmentId(file?.name) :
+            setSimpleEnvironmentFile(file)
     }
 
     // form state
@@ -69,7 +81,7 @@ export default function AnalysisWizard() {
     // determine if we can move to next step or not
     let showNextButton = false
     switch (activeStep) {
-        case 0: showNextButton = !!componentId
+        case 0: showNextButton = !!component
             break
         case 1: showNextButton =
             (parameterSource == TabValues.ENVIRONMENT && !!environmentId) ||
@@ -165,7 +177,7 @@ export default function AnalysisWizard() {
         isComponentOMEX ?
             parameterSource == TabValues.ENVIRONMENT && setParameterSource(TabValues.INPUT) :
             parameterSource == TabValues.INPUT && setParameterSource(TabValues.ENVIRONMENT)
-    }, [componentId])
+    }, [component])
 
     return (
         <Container style={stepperContainerStyle}>
@@ -177,11 +189,15 @@ export default function AnalysisWizard() {
                     icon={<TbComponents />}
                 >
                     <Dropzone
-                        allowedTypes={[ObjectTypes.SBOL.id, ObjectTypes.SBML.id, ObjectTypes.OMEX.id]}
+                        allowedTypes={{
+                            "text/xml": [".xml"],
+                            "application/xml": [".xml"],
+                            "application/octet-stream": [".xml", ".sbol", ".omex"],
+                        }}
                         item={component?.name}
                         onItemChange={handleComponentChange}
                     >
-                        Drag & drop a component from the explorer
+                        Attach an SBOL, SBML, or OMEX file.
                     </Dropzone>
                 </Stepper.Step>
                 <Stepper.Step
@@ -205,12 +221,17 @@ export default function AnalysisWizard() {
                             </Tabs.Tab>
                         </Tabs.List>
                         <Tabs.Panel value={TabValues.ENVIRONMENT}>
+                            <Space h="xl" />
                             <Dropzone
-                                allowedTypes={[ObjectTypes.OMEX.id]}
+                                allowedTypes={{
+                                    "text/xml": [".xml"],
+                                    "application/xml": [".xml"],
+                                    "application/octet-stream": [".xml", ".sbol", ".omex"],
+                                }}
                                 item={environment?.name}
                                 onItemChange={handleEnvironmentChange}
                             >
-                                Drag & drop an environment from the explorer
+                                Attach an SBML or OMEX file.
                             </Dropzone>
                         </Tabs.Panel>
                         <Tabs.Panel value={TabValues.PARAMETERS}>

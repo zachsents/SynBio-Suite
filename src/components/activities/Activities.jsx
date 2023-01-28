@@ -2,6 +2,7 @@ import { Box, Tabs, Title, Tooltip } from '@mantine/core'
 import { useActiveActivity, useActivities } from '../../redux/hooks/activityHooks'
 import { getActivity } from '../../activities'
 import { SVGIcon } from '../../icons'
+import { useBrowserCompatbility } from '../BrowserCompatiblityProvider'
 
 
 export default function Activities() {
@@ -41,7 +42,10 @@ export default function Activities() {
         )
     })
 
-    return (
+    // check browser compatibility 
+    const { fileSystemCompatible } = useBrowserCompatbility()
+
+    return fileSystemCompatible ?
         <Tabs
             value={activeActivity}
             onTabChange={setActiveActivity}
@@ -55,7 +59,8 @@ export default function Activities() {
             </Tabs.List>
             {tabPanels}
         </Tabs>
-    )
+        :
+        <></>
 }
 
 

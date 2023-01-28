@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux'
 import { panelsSelectors } from '../../../redux/hooks/panelsHooks'
 import { createSelector } from '@reduxjs/toolkit'
 import StatusBadge from './StatusBadge'
+import { useBrowserCompatbility } from '../../BrowserCompatiblityProvider'
 
 
 export const PanelContext = createContext()
@@ -25,6 +26,8 @@ export default function SimulatorPanel({ id }) {
             results => results && Object.keys(results).length
         )
     )
+
+    const { fileSystemCompatible } = useBrowserCompatbility()
 
     return (
         <PanelContext.Provider value={id}>
@@ -47,7 +50,8 @@ export default function SimulatorPanel({ id }) {
                     <AnalysisResults />
                 </Tabs.Panel>
             </Tabs>
-            <PanelSaver id={id} />
+            {fileSystemCompatible &&
+                <PanelSaver id={id} />}
         </PanelContext.Provider>
     )
 }

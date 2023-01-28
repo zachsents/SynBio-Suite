@@ -1,9 +1,11 @@
 import DragTabs from "./DragTabs"
-import { useActivePanel, usePanelIds, useReorderPanels } from '../../redux/hooks/panelsHooks'
+import { useActivePanel, useOpenPanel, usePanelIds, useReorderPanels } from '../../redux/hooks/panelsHooks'
 import Panel from "./Panel"
 import CenteredTitle from "../CenteredTitle"
 import { useLocalStorage } from "@mantine/hooks"
 import WelcomeScreen from "../WelcomeScreen"
+import { DummyAnalysisFileHandle, useBrowserCompatbility } from "../BrowserCompatiblityProvider"
+import { useEffect } from "react"
 
 export default function Panels() {
 
@@ -13,7 +15,17 @@ export default function Panels() {
     const reorderPanels = useReorderPanels()
 
     // first time visitor
-    const [firstTime] = useLocalStorage({ key: 'first-time-visiting', defaultValue: true })
+    const [firstTime, setFirstTime] = useLocalStorage({ key: 'first-time-visiting', defaultValue: true })
+
+    // browser compatibility
+    const { fileSystemCompatible } = useBrowserCompatbility()
+    const openPanel = useOpenPanel()
+    useEffect(() => {
+        if(!fileSystemCompatible) {
+            openPanel(DummyAnalysisFileHandle)
+            setFirstTime(false)
+        }
+    }, [fileSystemCompatible])
 
     return (
         <div style={{ flexGrow: 1 }}>
@@ -26,7 +38,7 @@ export default function Panels() {
                     onSelect={setActivePanel}
                     onReorder={reorderPanels}
                 /> :
-                firstTime ?
+                firstTime && fileSystemCompatible ?
                     <WelcomeScreen /> :
                     <CenteredTitle>Open a file to start</CenteredTitle>}
         </div>

@@ -1,4 +1,4 @@
-import { workingDirectorySlice } from '../store'
+import store, { workingDirectorySlice } from '../store'
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 import { classifyFile } from "../../objectTypes"
 import { useOpenPanel, useCloseAllPanels, usePanelIds, useClosePanel, panelsSelectors } from "./panelsHooks"
@@ -10,6 +10,10 @@ const { actions, selectors } = workingDirectorySlice
 
 export const useFiles = () => useSelector(selectors.selectAll)
 export const useFile = id => useSelector(state => selectors.selectById(state, id))
+
+export function getFile(id) {
+    return store.getState().workingDirectory.entities[id]
+}
 
 export function useWorkingDirectory() {
     

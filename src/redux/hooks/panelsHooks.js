@@ -102,6 +102,14 @@ export function useActivePanel() {
     ]
 }
 
+
+/**
+ * Hook that debounces panel data and saves it when it changes.
+ *
+ * @export
+ * @param {string} id Panel ID
+ * @param {number} debounceTime Time to debounce by in milliseconds.
+ */
 export function useAutoSavePanel(id, debounceTime) {
     const panel = usePanel(id)
 
@@ -122,6 +130,13 @@ export function useAutoSavePanel(id, debounceTime) {
     }, [debouncedPanelContent])
 }
 
+
+/**
+ * Hook thaat exposes the reorder panels reducer.
+ *
+ * @export
+ * @return {Function} 
+ */
 export function useReorderPanels() {
     const dispatch = useDispatch()
     return payload => dispatch(actions.reoder(payload))
@@ -130,10 +145,26 @@ export function useReorderPanels() {
 
 // Utility
 
+/**
+ * Checks if a panel is open given the ID.
+ *
+ * @export
+ * @param {string} id Panel ID
+ * @return {boolean} Whether the panel is currently open or not
+ */
 export function isPanelOpen(id) {
     return !!selectors.selectById(store.getState(), id)
 }
 
+
+/**
+ * Serializes the data from a panel given the panel ID. Used in
+ * preparation for saving to a file.
+ *
+ * @export
+ * @param {string} id Panel ID
+ * @return {string} Serialized panel data
+ */
 export function serializePanel(id) {
     const panel = selectors.selectById(store.getState(), id)
 

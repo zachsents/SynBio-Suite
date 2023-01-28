@@ -1,5 +1,17 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit"
 
+/**
+ * This module is creating a Redux slice for managing "panels" in the application's state.
+ * The createEntityAdapter function from the @reduxjs/toolkit library is used to create
+ * an adapter for the panels state, which allows for easy management of entities (in this
+ * case, the panels). The initial state of the panels is obtained using the
+ * getInitialState method from the adapter. The createSlice function is then used to
+ * create a slice of the Redux store for the panels, with the initial state being the
+ * state obtained from the adapter. The slice has several reducers, such as openPanel,
+ * closePanel, setActive, closeAll, and updateOne, that are used to add, remove, update,
+ * and reorder panels in the state. The selectors field exports the selectors from the
+ * adapter, which can be used to access specific parts of the state.
+ */
 
 const panelsAdapter = createEntityAdapter()
 const initialState = panelsAdapter.getInitialState()
