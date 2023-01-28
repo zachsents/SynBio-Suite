@@ -54,7 +54,7 @@ export default function AnalysisWizard() {
     const [componentId, setComponentId] = usePanelProperty(panelId, 'component', false)
     const componentFile = useFile(componentId)
     const [simpleComponentFile, setSimpleComponentFile] = useState()
-    const component = componentFile ?? simpleComponentFile
+    const component = componentFile ?? (simpleComponentFile && { getFile: () => simpleComponentFile })
     const handleComponentChange = file => {
         fileSystemCompatible ?
             setComponentId(file?.name) :
@@ -67,7 +67,7 @@ export default function AnalysisWizard() {
     const [environmentId, setEnvironmentId] = usePanelProperty(panelId, 'environment', false)
     const environmentFile = useFile(environmentId)
     const [simpleEnvironmentFile, setSimpleEnvironmentFile] = useState()
-    const environment = environmentFile ?? simpleEnvironmentFile
+    const environment = environmentFile ?? (simpleEnvironmentFile && { getFile: () => simpleEnvironmentFile })
     const handleEnvironmentChange = file => {
         fileSystemCompatible ?
             setEnvironmentId(file?.name) :
