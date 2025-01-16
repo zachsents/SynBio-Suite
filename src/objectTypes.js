@@ -38,7 +38,16 @@ export const ObjectTypes = {
         icon: IoAnalyticsSharp,
         createable: true,
         extension: '.analysis',
-    }
+    },
+    // Build: {
+    //     id: "synbio.object-type.build",
+    //     title: "Build",
+    //     listTitle: "Build",
+    //     fileNameMatch: /\.analysis$/,
+    //     icon: IoAnalyticsSharp,
+    //     createable: true,
+    //     extension: '.analysis', 
+    // }
 }
 
 export function getObjectType(id) {

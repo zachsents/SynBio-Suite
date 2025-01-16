@@ -45,8 +45,23 @@ export function useWorkingDirectory() {
 
 
 // Action hooks
+export async function listSubdirectories(workDir){
+    const subdirs = []
+    for await (const [name, handle] of workDir.entries()) {
+        if (handle.kind === 'directory') {
+            subdirs.push(name)
+        }
+    }
+    return subdirs
+}
 
-export function useCreateFile() {
+export async function useCreateDirectory(dirName){
+    const workDir = useSelector(state => state.workingDirectory.directoryHandle)
+    
+
+}
+
+export async function useCreateFile() {
     const dispatch = useDispatch()
     const openPanel = useOpenPanel()
     const workDir = useSelector(state => state.workingDirectory.directoryHandle)

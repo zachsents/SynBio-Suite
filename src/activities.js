@@ -1,8 +1,11 @@
 import ExplorerActivityView from "./components/activities/explorer/ExplorerActivityView"
 import BugReportView from "./components/activities/explorer/BugReportView"
+import BuildActivityView from "./components/activities/explorer/BuildActivityView";
 import GitHubView from "./components/activities/explorer/GitHubView";
 import { FileIcon, RemoteControlIcon, BugReport } from "./icons"
 import { RiGithubFill } from "react-icons/ri";
+import { GiThorHammer} from "react-icons/gi";
+
 
 
 
@@ -12,6 +15,12 @@ export const Activities = {
         title: "Local Explorer",
         component: ExplorerActivityView,
         icon: FileIcon
+    },
+    Build: {
+        id: "synbio.activity.build",
+        title: "Build Plan",
+        component: BuildActivityView,
+        icon: GiThorHammer,
     },
     // RemoteFileExplorer: {
     //     id: "synbio.activity.remote-file-explorer",
@@ -28,6 +37,7 @@ export const Activities = {
         icon: RiGithubFill,
         mt: 'auto'
     },
+
     BugReport: {
         id: "synbio.activity.bug-report",
         title: "Report Bug",
