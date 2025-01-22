@@ -24,6 +24,7 @@ export function useWorkingDirectory() {
             // read files
             findFilesInDirectory(newWorkDir)
                 .then(foundFiles => {
+                    console.log(foundFiles)
                     dispatch(actions.setWorkingDirectory(newWorkDir))
                     dispatch(actions.setFiles(foundFiles))
 
@@ -61,7 +62,7 @@ export async function useCreateDirectory(dirName){
 
 }
 
-export async function useCreateFile() {
+export function useCreateFile() {
     const dispatch = useDispatch()
     const openPanel = useOpenPanel()
     const workDir = useSelector(state => state.workingDirectory.directoryHandle)

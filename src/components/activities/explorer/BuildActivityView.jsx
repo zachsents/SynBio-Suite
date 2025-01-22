@@ -4,12 +4,17 @@ import { Accordion, ScrollArea, Title, Text, Flex } from '@mantine/core'
 import { ObjectTypes } from '../../../objectTypes'
 import ExplorerListItem from './ExplorerListItem'
 import { listSubdirectories } from '../../../redux/hooks/workingDirectoryHooks'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useEffect } from 'react'
-
+import { workingDirectorySlice } from '../../../redux/store'
+import { useWorkingDirectory } from '../../../redux/hooks/workingDirectoryHooks'
 export default function ({currentDirectory}) {
     
-    const workDir = useSelector(state => state.workingDirectory.directoryHandle)
+    let workDir = useSelector(state => state.workingDirectory.directoryHandle)
+    const dispatch = useDispatch()
+    // const {setWorkingDirectory} = workingDirectorySlice.actions
+    const [workingDirectory, setWorkingDirectory] = useWorkingDirectory()
+    
 
     // Roundabout way to be able to use async
     useEffect(() =>{
@@ -22,11 +27,13 @@ export default function ({currentDirectory}) {
                 const subDir = await listSubdirectories(workDir)
 
                 if(!subDir.length){
-                    await workDir.getDirectoryHandle("NEW ONE", { create: true })
-                    console.log("yep")
+                    await workDir.getDirectoryHandle("Build", { create: true })
+                }
+                else{
+                    workDir = await workDir.getDirectoryHandle('Build')
+                    setWorkingDirectory(workDir)
                 }
             }
-            
         }
         getSubDirs()
 
@@ -37,6 +44,7 @@ export default function ({currentDirectory}) {
     // Create a subdirectory if no subDir
     // grab file handles
     const files = useFiles()
+    console.log(files)
 
     // handle creation
     const createFile = useCreateFile()
